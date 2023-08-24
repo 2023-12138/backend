@@ -3,9 +3,12 @@ import  re
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Q
+from django.forms.models import model_to_dict
 from User.models import *
-from Tools.EmailCheck import *
+from Tools.EmailCheck import emailCheck
 from Tools.MakeToken import make_token
+from Tools.LoginCheck import loginCheck
+
 #注册
 def userRegister(request):
     json_str = request.body #拿到json字符串
@@ -44,7 +47,7 @@ def userRegister(request):
                 newUser.save()
                 return JsonResponse({'code': 200, 'message': "注册成功", 'data': {}})
             except Exception as e:
-                return JsonResponse({'code': 500, 'message': "服务器错误", 'data': {}})
+                return JsonResponse({'code': 500, 'message': "服务器异常", 'data': {}})
 
 #登录
 def userLogin(request):
@@ -77,4 +80,83 @@ def sendCaptcha(email):
         newCaptcha.save()
     emailCheck(email,captcha)
 
+@loginCheck
+def changeInformation(request):
+    user=request.myUser
+    json_str=request.body
+    json_obj=json.loads(json_str)
+    username=json_obj.get('username')
+    phone=json_obj.get('phone')
+    email=json_obj.get('email')
+    if not username.isalnum():
+        return JsonResponse({'code': 400, 'message': "用户名不合法", "data":{}})
+    if User.objects.filter(Q(username=username) &Q(is_active = True)).exists() and username!=user.username:
+        return JsonResponse({'code': 400, 'message': "用户名已存在", "data":{}})
+    if not re.match('^1\d{10}$',phone):
+        return JsonResponse({'code': 400, 'message': "手机号不合法", "data": {}})
+    if User.objects.filter(Q(phone=phone) &Q(is_active = True)).exists() and phone!=user.phone:
+        return JsonResponse({'code': 400, 'message': "手机号已被使用", "data": {}})
+    if not re.match('^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$',email):
+        return JsonResponse({'code': 400, 'message': "邮箱不合法", "data": {}})
+    if User.objects.filter(Q(email=email) &Q(is_active = True)).exists() and email!=user.email:
+        return JsonResponse({'code': 400, 'message': "邮箱已被使用", "data": {}})
+    if username==user.username and phone==user.phone and email==user.email :
+        return JsonResponse({'code': 400, 'message': "没有要修改的信息", "data": {}})
+    user.username=username
+    user.phone=phone
+    user.email=email
+    try:
+        user.save()
+        return JsonResponse({'code': 200, 'message': "修改信息成功", "data": {}})
+    except Exception as e:
+        return JsonResponse({'code': 500, 'message': "服务器异常", "data": {}})
 
+@loginCheck
+def changePassword(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    oldPassword=json_obj.get('oldPassword')
+    newPassword=json_obj.get('newPassword')
+    user=request.myUser
+    if user.password==oldPassword:
+        if re.match('^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,18}$', newPassword):
+            if oldPassword==newPassword:
+                return JsonResponse({'code':400,'message':'修改后的密码不能与原密码相同','data':{}})
+            else:
+                user.password=newPassword
+                try:
+                    user.save()
+                except Exception as e:
+                    print(e)
+                    return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+        else:
+            return JsonResponse({'code': 400, 'message': '密码不合法', 'data': {}})
+    else:
+        return JsonResponse({'code': 400, 'message': '原密码错误', 'data': {}})
+    if user.password==new_password:
+        return JsonResponse({'code': 200, 'message': '修改密码成功', 'data': {}})
+
+def pwdFind(request):#找回密码验证
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    email = json_obj.get("email")
+    captcha = json_obj.get("captcha")
+    pwd = json_obj.get("newPassword")
+    user1 = User.objects.get(email=email)
+    user2 = Captcha.objects.get(email=email)
+    if user2.captcha!=captcha:
+        return JsonResponse({'code': 400, 'message': '验证码错误', 'data': {}})
+    if not re.match('^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,18}$', pwd):
+        return JsonResponse({'code': 400, 'message': '密码不合法', 'data': {}})
+    try:
+        user1.password = pwd
+        user1.save()
+    except Exception as e:
+        return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+
+@loginCheck
+def showInfo(request):#返回个人信息
+    user = request.myUser
+    data = model_to_dict(user)
+    result = {"code":200, "message":"成功返回用户信息" , 'data':{'info':data}}
+    return JsonResponse(result)
