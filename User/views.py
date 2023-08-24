@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from User.models import *
 from Tools.EmailCheck import *
+from Tools.MakeToken import make_token
 #注册
 def userRegister(request):
     json_str = request.body #拿到json字符串
