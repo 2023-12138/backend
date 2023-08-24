@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-_52ycju(u6k_d$9m)8qolmeg%is6%-kdaga$o5lx7-k$n-y1ch
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,12 +42,29 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    #"django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CORS_ORIGIN_ALLOW_ALL=True
+
+CORS_ALLOW_METHODS =(
+    'POST',
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-requested-with',
+)
 
 ROOT_URLCONF = "summer.urls"
 
@@ -75,8 +92,14 @@ WSGI_APPLICATION = "summer.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+       # "NAME": BASE_DIR / "db.sqlite3",
+        "HOST": '101.43.202.84',
+        'PORT': '3306',
+        'NAME': 'summer',#数据库名称
+        'USER': 'root',
+        'PASSWORD': 'mczzy',
+
     }
 }
 
@@ -103,14 +126,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "zh-Hans"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Shanghai"
 
 USE_I18N = True
 
-USE_TZ = True
-
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
