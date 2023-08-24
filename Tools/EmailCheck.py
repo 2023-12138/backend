@@ -10,7 +10,7 @@ import email.utils
 from email.mime.text import MIMEText
 authorizationKey = "rpljgyjfrbhageha"
 
-def createCaptacha():
+def createCaptcha():
     n1 = random.randint(0, 9)
     n2 = random.randint(0, 9)
     n3 = random.randint(0, 9)

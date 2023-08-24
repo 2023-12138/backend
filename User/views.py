@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from User.models import *
-from Tools.EmailCheck import emailCheck
+from Tools.EmailCheck import emailCheck,createCaptcha
 from Tools.MakeToken import make_token
 from Tools.LoginCheck import loginCheck
 
@@ -70,7 +70,7 @@ def userLogin(request):
 
 #发送验证码
 def sendCaptcha(email):
-    captcha = createCaptacha()
+    captcha = createCaptcha()
     if Captcha.objects.filter(email = email).exists():
         oldCaptcha = Captcha.objects.get(email)
         oldCaptcha.captcha = captcha
