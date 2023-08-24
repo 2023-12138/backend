@@ -11,6 +11,6 @@ class User(models.Model):#有自增主键 id,记录用户基本信息
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
 
 class Captcha(models.Model):#记录验证码
-    email = models.CharField('email',primary_key = True) #邮箱
-    captcha = models.CharField('captcha') #用户的验证码
+    email = models.CharField('email',primary_key = True,max_length=25) #邮箱
+    captcha = models.CharField('captcha',max_length=10) #用户的验证码
 

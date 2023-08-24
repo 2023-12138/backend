@@ -7,14 +7,14 @@ class Chatroom(models.Model):
     cname = models.CharField(max_length=256)
 
 class ChatUser(models.Model):
-    cid = models.IntegerField(max_length=1024)
-    uid1 = models.IntegerField(max_length=1024, null=True)
-    uid2 = models.IntegerField(max_length=1024, null=True)
-    tid = models.IntegerField(max_length=1024, null=True)
+    cid = models.IntegerField()
+    uid1 = models.IntegerField(null=True)
+    uid2 = models.IntegerField(null=True)
+    tid = models.IntegerField(null=True)
 
 class Record(models.Model):
     rid = models.AutoField(primary_key=True)
-    cid = models.IntegerField(max_length=1024)
+    cid = models.IntegerField()
     time = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=1024)
-    sender = models.IntegerField(max_length=1024, null=True)
+    sender = models.IntegerField(null=True)
