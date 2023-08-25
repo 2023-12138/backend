@@ -5,6 +5,7 @@ from User.models import User
 class Chatroom(models.Model):
     cid = models.AutoField(primary_key=True)
     cname = models.CharField(max_length=256)
+    is_active = models.BooleanField(default=True)
 
 class ChatUser(models.Model):
     cid = models.IntegerField()
@@ -18,3 +19,4 @@ class Record(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=1024)
     sender = models.IntegerField(null=True)
+    is_active = models.BooleanField(default=True)
