@@ -1,0 +1,18 @@
+
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ("User", "0002_alter_captcha_email"),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name="user",
+            name="avatar",
+            field=models.TextField(null=True, verbose_name="avatar"),
+        ),
+    ]
