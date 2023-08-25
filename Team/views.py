@@ -137,3 +137,5 @@ def viewUser(request):
         userlist.append(datadic)
     return JsonResponse({'code':200,'message':'查询成员成功','data':{'userlist':userlist}})
 
+# @loginCheck
+# def getUsers(request):
