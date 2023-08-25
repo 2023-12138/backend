@@ -4,7 +4,7 @@ from User.models import User
 # Create your models here.
 class Chatroom(models.Model):
     cid = models.AutoField(primary_key=True)
-    cname = models.CharField(max_length=256)
+    cname = models.CharField(max_length=256,default="FusionChat")
     is_active = models.BooleanField(default=True)
 
 class ChatUser(models.Model):
