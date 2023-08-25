@@ -9,8 +9,8 @@ class Chatroom(models.Model):
 
 class ChatUser(models.Model):
     cid = models.IntegerField()
-    uid1 = models.IntegerField(null=True)
-    uid2 = models.IntegerField(null=True)
+    from_uid = models.IntegerField(null=True)
+    to_uid = models.IntegerField(null=True)
     tid = models.IntegerField(null=True)
 
 class Record(models.Model):

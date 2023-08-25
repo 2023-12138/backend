@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 from Tools import *
 from Tools.LoginCheck import loginCheck
 from User.models import *
+from Chat.models import *
 
 # Create your views here.
 @loginCheck
@@ -28,6 +29,13 @@ def createTeam(request):
     new_data = User_team(uid=user.uid, tid=new_team.tid, status=0)
     try:
         new_data.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    new_chatroom=Chatroom(cname=teamname)
+    new_chatdata=ChatUser(cid=new_chatroom.cid,tid=new_team.tid)
+    try:
+        new_chatroom.save()
+        new_chatdata.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '创建团队成功', 'data': {'tid': new_team.tid}})
