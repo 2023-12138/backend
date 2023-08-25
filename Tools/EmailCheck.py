@@ -19,6 +19,8 @@ def createCaptcha():
 
 
 def emailCheck(userEmail,num):
+    print(userEmail)
+    # print(num)
     message = MIMEText(num)
     message['To'] = email.utils.formataddr(('xxx', userEmail))
     message['From'] = email.utils.formataddr(('FusionCode', '1274975655@qq.com'))

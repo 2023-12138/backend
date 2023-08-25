@@ -14,4 +14,5 @@ urlpatterns = [
     path('changePwd',views.changePassword),#修改密码
     path('pwdFind',views.pwdFind),#找回密码
     path('showInfo',views.showInfo),#查询用户信息
+    path('changeAva',views.changeAvatar),#修改头像
 ]

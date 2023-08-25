@@ -20,6 +20,7 @@ def userRegister(request):
     email = json_obj.get('email')
     name  = json_obj.get('name')
     captcha = json_obj.get('captcha')
+    avatar = json_obj.get('avatar')
     usernameToString = str(username)
     if password != confirmPassword:
         return JsonResponse({'code': 400, 'message': "两次密码不同", 'data':{}})
@@ -39,10 +40,11 @@ def userRegister(request):
         return JsonResponse({'code': 400, 'message': "邮箱已被使用", 'data': {}})
     else :
         correctCaptcha = Captcha.objects.get(email=email)
-        if correctCaptcha != captcha:
+        if correctCaptcha.captcha != captcha:
             return JsonResponse({'code': 400, 'message': "验证码错误", 'data': {}})
         else:
             newUser = User(username=username, password=password, phone=phone, email=email, name=name)
+            if avatar : newUser.avatar = avatar
             try:
                 newUser.save()
                 return JsonResponse({'code': 200, 'message': "注册成功", 'data': {}})
@@ -69,19 +71,23 @@ def userLogin(request):
         return JsonResponse({'code': 400, 'message': "密码错误", 'data': {}})
 
 #发送验证码
-def sendCaptcha(email):
+def sendCaptcha(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    email = json_obj.get('email')
     captcha = createCaptcha()
     if Captcha.objects.filter(email = email).exists():
-        oldCaptcha = Captcha.objects.get(email)
+        oldCaptcha = Captcha.objects.get(email=email)
         oldCaptcha.captcha = captcha
         oldCaptcha.save()
     else:
         newCaptcha = Captcha(email=email,captcha=captcha)
         newCaptcha.save()
     emailCheck(email,captcha)
+    return JsonResponse({'code': 200, 'message': "验证码发送成功", 'data': {}})
 
 @loginCheck
-def changeInformation(request):
+def changeInformation(request): #修改个人信息
     user=request.myUser
     json_str=request.body
     json_obj=json.loads(json_str)
@@ -112,7 +118,7 @@ def changeInformation(request):
         return JsonResponse({'code': 500, 'message': "服务器异常", "data": {}})
 
 @loginCheck
-def changePassword(request):
+def changePassword(request): #修改密码
     json_str = request.body
     json_obj = json.loads(json_str)
     oldPassword=json_obj.get('oldPassword')
@@ -133,8 +139,21 @@ def changePassword(request):
             return JsonResponse({'code': 400, 'message': '密码不合法', 'data': {}})
     else:
         return JsonResponse({'code': 400, 'message': '原密码错误', 'data': {}})
-    if user.password==new_password:
+    if user.password==newPassword:
         return JsonResponse({'code': 200, 'message': '修改密码成功', 'data': {}})
+
+@loginCheck
+def changeAvatar(request): #修改头像
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    avatar = json_obj.get("avatar")
+    user.avatar = avatar
+    try:
+        user.save()
+        return JsonResponse({'code': 200, 'message': '修改头像成功', 'data': {}})
+    except Exception as e:
+        return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
 def pwdFind(request):#找回密码验证
     json_str = request.body
