@@ -21,6 +21,6 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"] #要发送的信息
         to = int(text_data_json["to"]) #要发送给的成员id或者群id
-        toUserSocket = userSocketDict.get("to")
+        toUserSocket = userSocketDict.get(to)
         toUserSocket.send(text_data=json.dumps({"message": message}))
         self.send(text_data=json.dumps({"message": message}))

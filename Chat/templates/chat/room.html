@@ -24,7 +24,7 @@
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             alert(data)
-            document.querySelector('#chat-log').value += (data.uid+ '\n');
+            document.querySelector('#chat-log').value += (data.message+ '\n');
         };
 
         chatSocket.onclose = function(e) {
