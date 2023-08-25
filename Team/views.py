@@ -137,5 +137,14 @@ def viewUser(request):
         userlist.append(datadic)
     return JsonResponse({'code':200,'message':'查询成员成功','data':{'userlist':userlist}})
 
-# @loginCheck
-# def getUsers(request):
+@loginCheck
+def getUsers(request):#根据用户名筛选符合要求的用户
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    userName = json_obj.get('userName')
+    result = User.objects.filter(username__contains=userName)
+    data = []
+    for obj in result:
+        data.append({'username':obj.username,'uid':obj.uid})
+    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'userlist': data}})
