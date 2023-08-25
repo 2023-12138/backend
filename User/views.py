@@ -64,7 +64,8 @@ def userLogin(request):
     if user.password == password:  # 判断请求的密码是否与数据库存储的密码相同
         token = make_token(user.uid) #成功登录生成token并以字符串的形式返回
         return JsonResponse({'code': 200, 'message': "登录成功",'data':{
-            'token' : token
+            'token' : token,
+            'uid' : user.uid,
         }})
     #重定向回先前页面
     else:

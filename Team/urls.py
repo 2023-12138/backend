@@ -7,5 +7,6 @@ urlpatterns = [
     path('deleteUser',views.deleteUser),
     path('addAdmin',views.addAdmin),
     path('removeAdmin',views.removeAdmin),
-    path('viewUser',views.viewUser)
+    path('viewUser',views.viewUser),
+    path('getUsers',views.getUsers),
 ]
