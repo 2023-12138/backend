@@ -170,6 +170,7 @@ def pwdFind(request):#找回密码验证
     try:
         user1.password = pwd
         user1.save()
+        return JsonResponse({'code': 200, 'message': '修改密码成功', 'data': {}})
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
