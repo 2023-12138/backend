@@ -33,7 +33,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         tid = int(text_data_json['tid'])    #群聊团队id
         nowTime = datetime.datetime #当前时间
         if tid == "":   #私聊
-            from_uid=int(text_data_json['from_uid'])
+            from_uid=self.uid
             cid=ChatUser.objects.get(Q(from_uid=from_uid)&Q(to_uid=to_uid)) #聊天室id
             toUserSocket = userSocketDict.get(to_uid)
             if toUserSocket != None:        #成员在线
