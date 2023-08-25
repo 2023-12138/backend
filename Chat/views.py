@@ -2,8 +2,10 @@ from django.shortcuts import render
 from Tools.LoginCheck import loginCheck
 from django.shortcuts import render
 from Chat.models import  *
+import json
 from Chat.consumers import userSocketDict
 from django.db.models import Q
+from django.http import JsonResponse
 def index(request):
     return render(request, "chat/index.html")
 
