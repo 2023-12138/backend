@@ -42,7 +42,7 @@ async def getHistory(request):
         for obj in recordTmp:
             await userSocket.send(
                 text_data=json.dumps({"message": obj.content, "senderId": obj.sender, "teamId": tid, "time": obj.time}))
-
+    return JsonResponse({'code': 400, 'message': "历史记录获取成功", "data":{}})
 
 
 
