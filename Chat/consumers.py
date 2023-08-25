@@ -37,16 +37,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             cid=ChatUser.objects.get(Q(from_uid=from_uid)&Q(to_uid=to_uid)) #聊天室id
             toUserSocket = userSocketDict.get(to_uid)
             if toUserSocket != None:        #成员在线
-                await toUserSocket.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":time}))
-            await self.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":time}))  # 在自己窗口展示
+                await toUserSocket.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":nowTime}))
+            await self.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":nowTime}))  # 在自己窗口展示
         if to_uid == "": #群聊
             userlist = User_team.objects.filter(tid=tid)    #团队成员列表
             cid=ChatUser.objects.get(tid=tid)       #聊天室id
             for user in userlist:
                 toUserSocket = userSocketDict.get(user.uid)
                 if toUserSocket != None:            #成员在线
-                    await toUserSocket.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":time}))
-        new_record = Record(cid=cid, time=dtime, content=message, sender=from_uid)
+                    await toUserSocket.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":nowTime}))
+        new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
         # try:
         new_record.save()
         # except:
