@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from Notice.models import *
 from Tools.LoginCheck import loginCheck
+from django.forms.models import model_to_dict
 
 @loginCheck
 def allRead(request):
@@ -65,6 +66,6 @@ def getNotice(request): #返回群聊通知列表
     user = request.myUser
     uid = user.uid
     notices = Notice.objects.filter(Q(uid=uid)&Q(is_active=True))
-    notice_list = [notice.to_dict() for notice in notices]
+    notice_list = [model_to_dict(notice) for notice in notices]
     return JsonResponse({'code': 200, 'message': "通知获取成功", "data": {'notice_list': notice_list}})
 
