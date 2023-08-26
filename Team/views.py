@@ -32,9 +32,9 @@ def createTeam(request):
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     new_chatroom=Chatroom(cname=teamname)
-    new_chatdata=ChatUser(cid=new_chatroom.cid,tid=new_team.tid)
     try:
         new_chatroom.save()
+        new_chatdata = ChatUser(cid=new_chatroom.cid, tid=new_team.tid)
         new_chatdata.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})

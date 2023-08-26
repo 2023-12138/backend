@@ -9,6 +9,7 @@ from Team.models import *
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db.models import Q
 from django.http import JsonResponse
+from Notice.models import *
 
 userSocketDict = {}
 
@@ -60,14 +61,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
             new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
             await self.record_save(new_record)
             aite = text_data_json.get('aite')
-            for user in userlist:
-                toUserSocket = userSocketDict.get(user.uid)
-                if toUserSocket != None:  # 成员在线
-                    await toUserSocket.send(text_data=json.dumps(
-                        {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
-                         "rid": new_record.rid}))
-        # try:
-
+            if aite!=None:   #该条消息有艾特
+                new_aite=Notice(uid=aite,rid=new_record.rid,tid=tid,type="chat")
+                await self.notice_save(new_aite)
+                for user in userlist:
+                    toUserSocket = userSocketDict.get(user.uid)
+                    if toUserSocket != None:  # 成员在线
+                        if user.uid!=aite:
+                            await toUserSocket.send(text_data=json.dumps(
+                                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                                "rid": new_record.rid}))
+                        if user.uid==aite:
+                            await toUserSocket.send(text_data=json.dumps(
+                                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat_aite",
+                                "rid": new_record.rid}))
+            else:                #该条消息无艾特
+                for user in userlist:
+                    toUserSocket = userSocketDict.get(user.uid)
+                    if toUserSocket != None:  # 成员在线
+                        await toUserSocket.send(text_data=json.dumps(
+                            {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                            "rid": new_record.rid}))
     @database_sync_to_async
     def get_cid(self, from_uid, to_uid):
         chatroom1 = ChatUser.objects.filter(Q(from_uid=from_uid) & Q(to_uid=to_uid))
@@ -99,3 +113,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def chatuser_save(self, chatuser):
         chatuser.save()
+    @database_sync_to_async
+    def notice_save(self,notice):
+        notice.save()
