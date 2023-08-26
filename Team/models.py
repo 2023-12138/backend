@@ -8,7 +8,7 @@ class Team(models.Model):
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
 
 class User_team(models.Model):
-    uid = models.CharField('uid',max_length=25)  # 用户id
-    tid = models.CharField('tid',max_length=25)  # 团队id
+    uid = models.IntegerField('uid')  # 用户id
+    tid = models.IntegerField('tid')  # 团队id
     status=models.CharField('status',max_length=25) #用户角色
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段

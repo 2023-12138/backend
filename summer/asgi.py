@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 # mysite/asgi.py
 import os
-
+from .wsgi import *
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
