@@ -63,9 +63,12 @@ def oneDelete(request):
 
 @loginCheck
 def getNotice(request): #返回群聊通知列表
+    json_str = request.body
+    json_obj = json.loads(json_str)
     user = request.myUser
     uid = user.uid
-    notices = Notice.objects.filter(Q(uid=uid)&Q(is_active=True))
+    type = json_obj.get("type")
+    notices = Notice.objects.filter(Q(uid=uid)&Q(is_active=True)&Q(type=type))
     notice_list = [model_to_dict(notice) for notice in notices]
     return JsonResponse({'code': 200, 'message': "通知获取成功", "data": {'notice_list': notice_list}})
 
