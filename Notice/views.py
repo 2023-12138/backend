@@ -24,7 +24,7 @@ def oneRead(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     nid = json_obj.get("nid")
-    notice = Notice.objects.get(nid=nid)
+    notice = Notice.objects.get(noticeId=nid)
     try:
         notice.read = False #修改为已读
         notice.save()
@@ -52,7 +52,7 @@ def oneDelete(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     nid = json_obj.get("nid")
-    notice = Notice.objects.get(nid=nid)
+    notice = Notice.objects.get(noticeId=nid)
     try:
         notice.is_active = False
         notice.save()
