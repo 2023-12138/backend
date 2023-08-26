@@ -44,6 +44,12 @@ INSTALLED_APPS = [
     "Notice",
 ]
 
+# 七牛云服务配置
+ACCESS_KEY = '6VPU2lyFULQxExcLBlSofqDy9CV5AKINuS8TawG2'
+SECRET_KEY = 'wzg2rtEdXzuaiR7m4zBXek_HVlK_TUfvu2-ZeO8u'
+BUCKET_NAME = 'fusioncode'
+
+
 # Daphne
 ASGI_APPLICATION = "summer.asgi.application"
 

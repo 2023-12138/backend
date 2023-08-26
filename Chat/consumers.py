@@ -36,8 +36,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         to_uid = text_data_json.get('to_uid')  # 私聊对象id
         tid = text_data_json.get('tid')  # 群聊团队id
         nowTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
+        from_uid = int(self.scope["url_route"]["kwargs"]["uid"])
         if tid == "":  # 私聊
-            from_uid = int(self.scope["url_route"]["kwargs"]["uid"])
             cid = await self.get_cid(from_uid, to_uid)  # 聊天室id
             new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
             await self.record_save(new_record)
@@ -60,6 +60,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
             await self.record_save(new_record)
             aite = text_data_json.get('aite')
+            threadList = []
             if aite!=None:   #该条消息有艾特
                 new_aite=Notice(uid=aite,rid=new_record.rid,tid=tid,type="chat")
                 await self.notice_save(new_aite)
