@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-_52ycju(u6k_d$9m)8qolmeg%is6%-kdaga$o5lx7-k$n-y1ch
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+# os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 
 # Application definition
 
