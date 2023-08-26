@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "User",
     "Chat",
-    "Team"
+    "Team",
+    "Notice",
 ]
 
 # Daphne

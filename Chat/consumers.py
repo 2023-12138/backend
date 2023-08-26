@@ -50,13 +50,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 if toUserSocket != None:            #成员在线
                     await toUserSocket.send(text_data=json.dumps({"message": message,"senderId":self.uid,"teamId":tid,"time":nowTime}))
         new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
-        # try:
         await self.record_save(new_record)
-        # except:
-        #     return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-        # to = int(text_data_json["to"])  # 要发送给的成员id或者群id
-        # toUserSocket = userSocketDict.get(to)
-        # await toUserSocket.send(text_data=json.dumps({"message": message}))
 
     @database_sync_to_async
     def get_cid(self,from_uid,to_uid):
