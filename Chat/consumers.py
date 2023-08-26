@@ -40,13 +40,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         from_uid = int(self.scope["url_route"]["kwargs"]["uid"])
         if tid == "":  # 私聊
             cid = await self.get_cid(from_uid, to_uid)  # 聊天室id
-            new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
-            await self.record_save(new_record)
             if cid == -1:  # 若未聊过天创建群聊
                 new_chatroom = Chatroom()
                 await self.chatroom_save(new_chatroom)
                 new_chatuser = ChatUser(cid=new_chatroom.cid, from_uid=from_uid, to_uid=to_uid)
                 await self.chatuser_save(new_chatuser)
+                cid=await self.get_cid(from_uid,to_uid)
+            new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
+            await self.record_save(new_record)
             toUserSocket = userSocketDict.get(to_uid)
             if toUserSocket != None:  # 成员在线
                 await toUserSocket.send(text_data=json.dumps(
