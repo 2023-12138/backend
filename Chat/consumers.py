@@ -39,6 +39,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if tid == "":  # 私聊
             from_uid = int(self.scope["url_route"]["kwargs"]["uid"])
             cid = await self.get_cid(from_uid, to_uid)  # 聊天室id
+            new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
+            await self.record_save(new_record)
             if cid == -1:  # 若未聊过天创建群聊
                 new_chatroom = Chatroom()
                 await self.chatroom_save(new_chatroom)
@@ -47,19 +49,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             toUserSocket = userSocketDict.get(to_uid)
             if toUserSocket != None:  # 成员在线
                 await toUserSocket.send(text_data=json.dumps(
-                    {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat"}))
+                    {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                     "rid": new_record.rid}))
             await self.send(text_data=json.dumps(
-                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat"}))  # 在自己窗口展示
+                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                 "rid": new_record.rid}))  # 在自己窗口展示
         if to_uid == "":  # 群聊
             userlist = await self.get_userlist(tid)  # 团队成员列表
             cid = await self.get_cid2(tid)  # 聊天室id
+            new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
+            await self.record_save(new_record)
             aite = text_data_json.get('aite')
             for user in userlist:
                 toUserSocket = userSocketDict.get(user.uid)
                 if toUserSocket != None:  # 成员在线
                     await toUserSocket.send(text_data=json.dumps(
-                        {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat"}))
-        new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid)
+                        {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                         "rid": new_record.rid}))
         # try:
         await self.record_save(new_record)
         # except:
