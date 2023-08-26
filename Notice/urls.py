@@ -12,4 +12,5 @@ urlpatterns = [
     path('alldelete',views.allDelete),#一键删除
     path('onedelete',views.oneDelete),#删除指定消息
     path('getnotice',views.getNotice),#获取消息
+    path('haveread',views.haveRead), #消息已读
 ]
