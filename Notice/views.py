@@ -14,7 +14,7 @@ def allRead(request):
     noticeList  = Notice.objects.filter(Q(uid=user.uid)&Q(is_active=True)&Q(read=True)&Q(type=type))
     try:
         for obj in noticeList:
-            obj.read = False #修改为已读
+            obj.read = 1 #修改为已读
             obj.save()
         return JsonResponse({'code': 200, 'message': "修改成功", 'data': {}})
     except Exception as e:
@@ -27,7 +27,7 @@ def oneRead(request):
     nid = json_obj.get("nid")
     notice = Notice.objects.get(noticeId=nid)
     try:
-        notice.read = False #修改为已读
+        notice.read = 1 #修改为已读
         notice.save()
         return JsonResponse({'code': 200, 'message': "修改成功", 'data': {}})
     except Exception as e:
