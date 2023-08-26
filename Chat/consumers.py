@@ -51,10 +51,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             toUserSocket = userSocketDict.get(to_uid)
             if toUserSocket != None:  # 成员在线
                 await toUserSocket.send(text_data=json.dumps(
-                    {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                    {"message": message, "senderId": self.uid, "receiverId":to_uid,"teamId": tid, "time": nowTime, "type": "chat",
                      "rid": new_record.rid}))
             await self.send(text_data=json.dumps(
-                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                {"message": message, "senderId": self.uid, "receiverId":to_uid,"teamId": tid, "time": nowTime, "type": "chat",
                  "rid": new_record.rid}))  # 在自己窗口展示
         if to_uid == "":  # 群聊
             userlist = await self.get_userlist(tid)  # 团队成员列表
@@ -71,12 +71,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     if toUserSocket != None:  # 成员在线
                         if user.uid != aite:
                             await toUserSocket.send(text_data=json.dumps(
-                                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime,
+                                {"message": message, "senderId": self.uid, "receiverId":"","teamId": tid, "time": nowTime,
                                  "type": "chat",
                                  "rid": new_record.rid}))
                         if user.uid == aite:
                             await toUserSocket.send(text_data=json.dumps(
-                                {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime,
+                                {"message": message, "senderId": self.uid,"receiverId":"","teamId": tid, "time": nowTime,
                                  "type": "chat_aite",
                                  "rid": new_record.rid}))
             else:  # 该条消息无艾特
@@ -84,7 +84,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     toUserSocket = userSocketDict.get(user.uid)
                     if toUserSocket != None:  # 成员在线
                         toUserSocket.send(text_data=json.dumps(
-                            {"message": message, "senderId": self.uid, "teamId": tid, "time": nowTime, "type": "chat",
+                            {"message": message, "senderId": self.uid,"receiverId":"" ,"teamId": tid, "time": nowTime, "type": "chat",
                              "rid": new_record.rid}))
 
     @database_sync_to_async
