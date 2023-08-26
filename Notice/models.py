@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class Notice(models.Model):
-    noticeId  = models.AutoField('nid',primary_key=True)  #消息id
-    uid  = models.IntegerField('uid') #用户id
+    noticeId = models.AutoField('nid',primary_key=True)  #消息id
+    uid = models.IntegerField('uid') #用户id
     rid = models.IntegerField('rid') #聊天记录id
     tid = models.IntegerField('tid',null=True) #@该用户的组id
     docId = models.IntegerField('docId',null=True) #@该用户的文档id
