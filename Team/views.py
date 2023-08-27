@@ -96,6 +96,8 @@ def deleteUser(request): #删除用户
     if data.status == '2':  # 判断用户是否有权限删除
         return JsonResponse({'code': 400, 'message': '用户没有权限删除成员', 'data': {}})
     data2 = User_team.objects.get(Q(uid=uid) & Q(tid=tid))
+    if data2.status!='2':
+        return JsonResponse({'code': 400, 'message': '用户没有权限删除管理员', 'data': {}})
     # if data.status==1 and data2.status!=2: # 判断用户是否有权限删除 等级为1的不可互相删除
     #     return JsonResponse({'code': 400, 'message': '用户没有权限删除成员', 'data': {}})
     try:  # 判断数据操作是否成功
