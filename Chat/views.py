@@ -67,6 +67,7 @@ def chatroom_save(newChatRoom):
 @database_sync_to_async
 def get_cid(tid):
     return ChatUser.objects.get(tid=tid).cid
+
 @database_sync_to_async
 def chatuser_save(chatuser):
     chatuser.save()
