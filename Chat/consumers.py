@@ -66,7 +66,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             aite = text_data_json.get('aite')
             # await self.group_chat(aite, message, new_record, nowTime, tid, userlist)
             if len(aite) >0:
-                async for i in aite:
+                for i in aite:
                     if i == -1: # @所有人
                         async for user in userlist:
                             new_aite = Notice(uid=user.uid, rid=new_record.rid, tid=tid, type="chat")
