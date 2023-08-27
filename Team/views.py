@@ -159,7 +159,7 @@ def getUsers(request):#根据用户名筛选符合要求的用户
     user = request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
-    userName = json_obj.get('userName')
+    userName = json_obj.get('username')
     result = User.objects.filter(username__contains=userName)
     data = []
     for obj in result:
