@@ -73,6 +73,8 @@ def viewTeam(request):  # 用户查看当前所属团队
     for data in teamidlist:
         team = Team.objects.get(tid=data.tid)
         tmp = model_to_dict(team)
+        creater=User_team.objects.get(Q(tid=data.tid)&Q(status="0")).uid
+        tmp['creater']=creater
         teamlist.append(tmp)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'teamlist': teamlist}})
 
