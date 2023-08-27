@@ -4,6 +4,8 @@ from Tools.LoginCheck import loginCheck
 from django.db.models import Q
 from Project.models import Project
 from django.forms.models import model_to_dict
+
+
 @loginCheck
 def createProject(request):
     user = request.myUser
@@ -20,6 +22,7 @@ def createProject(request):
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目创建成功', 'data': {'pid': new_project.pid}})
 
+
 @loginCheck
 def deleteProject(request):
     user = request.myUser
@@ -27,13 +30,17 @@ def deleteProject(request):
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')  # 项目id
     tid = json_obj.get('tid')  # 所属团队
-    data = Project.objects.get(Q(pid=pid) & Q(tid=tid))
+    if Project.objects.filter(Q(pid=pid) & Q(tid=tid) & Q(is_active=True)).exists():
+        data = Project.objects.get(Q(pid=pid) & Q(tid=tid))
+    else:
+        JsonResponse({'code': 400, 'message': '没有符合条件的项目', 'data': {}})
     try:
         data.is_active = 0
         data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目删除成功', 'data': {}})
+
 
 @loginCheck
 def recoverProject(request):
@@ -42,13 +49,17 @@ def recoverProject(request):
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')  # 项目id
     tid = json_obj.get('tid')  # 所属团队
-    data = Project.objects.get(Q(pid=pid) & Q(tid=tid))
+    if Project.objects.filter(Q(pid=pid) & Q(tid=tid) & Q(is_active=False)).exists():
+        data = Project.objects.get(Q(pid=pid) & Q(tid=tid) & Q(is_active=False))
+    else:
+        JsonResponse({'code': 400, 'message': '没有符合条件的项目', 'data': {}})
     try:
         data.is_active = 1
         data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目恢复成功', 'data': {}})
+
 
 @loginCheck
 def renameProject(request):
@@ -57,7 +68,10 @@ def renameProject(request):
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')
     project_name = json_obj.get('project_name')
-    data = Project.objects.get(Q(pid=pid))
+    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
+        data = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    else:
+        return JsonResponse({'code': 400, 'message': '无该项目id对应的项目', 'data': {}})
     try:
         data.project_name = project_name
         data.save()
@@ -65,25 +79,30 @@ def renameProject(request):
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目重命名成功', 'data': {}})
 
+
 @loginCheck
 def getProject(request):
     user = request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')
-    data = Project.objects.get(pid=pid)
+    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
+        data = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    else:
+        return JsonResponse({'code': 400, 'message': '无该项目id对应的项目', 'data': {}})
     return JsonResponse({'code': 200, 'message': "项目获取成功", "data": {'project': model_to_dict(data)}})
+
 
 @loginCheck
 def viewProject(request):
-    user=request.myUser
+    user = request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
-    tid=json_obj.get('tid')
-    projectlist=Project.objects.filter(tid=tid)
-    projects=[]
+    tid = json_obj.get('tid')
+    projectlist = Project.objects.filter(Q(tid=tid) & Q(is_active=True))
+    projects = []
     for project in projectlist:
-        data={}
-        data=model_to_dict(project)
+        data = {}
+        data = model_to_dict(project)
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
