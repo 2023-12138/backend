@@ -125,7 +125,6 @@ async def docAite(request):
 def makeLink(request): #生成链接
     json_str = request.body
     json_obj = json.loads(json_str)
-    status = json_obj.get("status") #权限
     identity=json_obj.get("identity")
     docId = json_obj.get("docId") #文档编号
     user = User(username="xxx",password="xxx",name="xxx",identity=identity)
