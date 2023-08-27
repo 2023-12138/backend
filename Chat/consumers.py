@@ -79,18 +79,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                      "type": "chat_aite",
                                      "rid": new_record.rid}))
                     else:
-                        new_aite = Notice(uid=aite, rid=new_record.rid, tid=tid, type="chat")
+                        new_aite = Notice(uid=i, rid=new_record.rid, tid=tid, type="chat")
                         await self.notice_save(new_aite)
                         async for user in userlist:
                             toUserSocket = userSocketDict.get(user.uid)
                             if toUserSocket != None:  # 成员在线
-                                if user.uid != aite:
+                                if user.uid != i:
                                     await toUserSocket.send(text_data=json.dumps(
                                         {"message": message, "senderId": self.uid, "receiverId": "", "teamId": tid,
                                          "time": nowTime,
                                          "type": "chat",
                                          "rid": new_record.rid}))
-                                if user.uid == aite:
+                                if user.uid == i:
                                     await toUserSocket.send(text_data=json.dumps(
                                         {"message": message, "senderId": self.uid, "receiverId": "", "teamId": tid,
                                          "time": nowTime,
