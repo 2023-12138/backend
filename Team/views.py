@@ -117,7 +117,7 @@ def addAdmin(request):
     if data.status == '2':
         return JsonResponse({'code': 400, 'message': '用户没有权限添加管理员', 'data': {}})
     data2=User_team.objects.get(Q(uid=uid)&Q(tid=tid)&Q(is_active=1))   #在前端就已经存储了用户角色
-    if data2.status=='2':
+    if data2.status!='2':
         return JsonResponse({'code': 400, 'message': '用户已是管理员', 'data': {}})
     data2.status=1
     data2.save()
