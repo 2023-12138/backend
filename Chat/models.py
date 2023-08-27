@@ -19,4 +19,6 @@ class Record(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     content = models.TextField(max_length=1024)
     sender = models.IntegerField(null=True)
+    uid=models.IntegerField(null=True)
+    tid=models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
