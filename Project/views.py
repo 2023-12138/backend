@@ -2,8 +2,8 @@ import json
 from django.http import JsonResponse
 from Tools.LoginCheck import loginCheck
 from django.db.models import Q
-from models import Project
-
+from Project.models import Project
+from django.forms.models import model_to_dict
 @loginCheck
 def createProject(request):
     user = request.myUser
@@ -73,3 +73,17 @@ def getProject(request):
     pid = json_obj.get('pid')
     data = Project.objects.get(Q(pid=pid))
     JsonResponse({'code': 200, 'message': "项目获取成功", "data": {'project': data}})
+
+@loginCheck
+def viewProject(request):
+    user=request.myuser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    tid=json_obj.get('tid')
+    projectlist=Project.objects.filter(tid=tid)
+    projects=[]
+    for project in projectlist:
+        data={}
+        data=model_to_dict(project)
+        projects.append(data)
+    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
