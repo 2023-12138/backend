@@ -34,7 +34,7 @@ async def getHistory(request):
         async  for obj in recordTmp:
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
             await userSocket.send(text_data=json.dumps(
-                {"message": obj.content, "senderId": obj.sender, "teamId": tid, "time": nowTime, "type": "chat","uid":obj.uid,"tid":obj.tid}))
+                {"message": obj.content, "senderId": obj.sender, "receiverId":"","teamId": tid, "time": nowTime, "type": "chat","rid":obj.rid}))
     elif senderId != "":  # 私聊消息记录
         chatRoom1 = await get_chatroom(uid, senderId)
         chatRoom2 = await get_chatroom(senderId, uid)
@@ -53,9 +53,10 @@ async def getHistory(request):
         async for obj in recordTmp:
             print(model_to_dict(obj))
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
+
             await userSocket.send(
                 text_data=json.dumps(
-                    {"message": obj.content, "senderId": obj.sender, "teamId": tid, "time": nowTime, "type": "chat","uid":obj.uid,"tid":obj.tid}))
+                    {"message": obj.content, "senderId": obj.sender, "receiverId":obj.uid,"teamId":"","time": nowTime, "type": "chat","rid":obj.rid}))
     return JsonResponse({'code': 200, 'message': "历史记录获取成功", "data": {}})
 
 @database_sync_to_async
