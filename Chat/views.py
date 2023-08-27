@@ -37,14 +37,16 @@ async def getHistory(request):
         chatRoom1 = await get_chatroom(uid, senderId)
         chatRoom2 = await get_chatroom(senderId, uid)
         cid = -1
-        if chatroom_exists(chatRoom1):
+        if await chatroom_exists(chatRoom1)==1:
             cid = await chatroom_cid(chatRoom1)
-        elif chatroom_exists(chatRoom2):
+        elif await chatroom_exists(chatRoom2)==1:
             cid = await chatroom_cid(chatRoom2)
         else:
             newChatRoom = Chatroom()
-            newChatRoom.save()
+            await chatroom_save(newChatRoom)
             cid = newChatRoom.cid
+            newchatuser=ChatUser(cid=cid,from_uid=uid,to_uid=senderId)
+            await chatuser_save(newchatuser)
         recordTmp = await get_record(cid)  # 获取该聊天室所有的聊天记录
         async  for obj in recordTmp:
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
@@ -53,11 +55,17 @@ async def getHistory(request):
                     {"message": obj.content, "senderId": obj.sender, "teamId": tid, "time": nowTime, "type": "chat"}))
     return JsonResponse({'code': 200, 'message': "历史记录获取成功", "data": {}})
 
+@database_sync_to_async
+def chatroom_save(newChatRoom):
+    newChatRoom.save()
+
 
 @database_sync_to_async
 def get_cid(tid):
     return ChatUser.objects.get(tid=tid).cid
-
+@database_sync_to_async
+def chatuser_save(chatuser):
+    chatuser.save()
 
 @database_sync_to_async
 def get_record(cid):
@@ -69,7 +77,9 @@ def get_chatroom(uid, senderId):
     return ChatUser.objects.filter(Q(from_uid=uid) & Q(to_uid=senderId))
 @database_sync_to_async
 def chatroom_exists(chatroom):
-    return chatroom.exists()
+    if chatroom.exists():
+        return 1
+    else:return 0
 @database_sync_to_async
 def chatroom_cid(chatroom):
     return chatroom.first().cid

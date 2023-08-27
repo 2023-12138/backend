@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "Chat",
     "Team",
     "Notice",
+    "Project",
 ]
 
 # 七牛云服务配置
