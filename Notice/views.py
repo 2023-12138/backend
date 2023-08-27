@@ -38,8 +38,13 @@ def allDelete(request):
     user = request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
-    type = json_obj.get("type")
-    noticeList = Notice.objects.filter(Q(uid=user.uid) & Q(is_active=True) & Q(type=type))
+    type = json_obj.get("type") #删除文档@还是群通知@
+    kind = json_obj.get("kind") #"all"代表全部删除,"read"代表已读删除
+    noticeList = []
+    if kind == "all":
+        noticeList = Notice.objects.filter(Q(uid=user.uid) & Q(is_active=True) & Q(type=type))
+    else:
+        noticeList = Notice.objects.filter(Q(uid=user.uid)&Q(is_active=True)&Q(type=type)&Q(read=1))
     try:
         for obj in noticeList:
             obj.is_active = False  # 修改为删除
