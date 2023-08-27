@@ -6,4 +6,5 @@ urlpatterns = [
     path('recoverProject',views.recoverProject),#恢复项目
     path('renameProject',views.renameProject),#重命名项目
     path('viewProject',views.viewProject),#查看团队下属项目
+    path('getProject',views.getProject),#获取某个项目信息
 ]

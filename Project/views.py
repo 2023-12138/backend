@@ -71,8 +71,8 @@ def getProject(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')
-    data = Project.objects.get(Q(pid=pid))
-    JsonResponse({'code': 200, 'message': "项目获取成功", "data": {'project': data}})
+    data = Project.objects.get(pid=pid)
+    return JsonResponse({'code': 200, 'message': "项目获取成功", "data": {'project': model_to_dict(data)}})
 
 @loginCheck
 def viewProject(request):
