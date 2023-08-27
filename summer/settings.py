@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "Team",
     "Notice",
     "Project",
+    "Doc",
 ]
 
 # 七牛云服务配置
