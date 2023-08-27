@@ -11,7 +11,7 @@ def allRead(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     type = json_obj.get("type")
-    noticeList  = Notice.objects.filter(Q(uid=user.uid)&Q(is_active=True)&Q(read=True)&Q(type=type))
+    noticeList  = Notice.objects.filter(Q(uid=user.uid)&Q(is_active=True)&Q(read=0)&Q(type=type))
     try:
         for obj in noticeList:
             obj.read = 1 #修改为已读
