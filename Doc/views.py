@@ -23,3 +23,4 @@ def makeLink(request):
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
+
