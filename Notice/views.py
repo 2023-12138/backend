@@ -82,12 +82,13 @@ def getNotice(request):  # 返回群聊通知列表
     notice_list = [model_to_dict(notice) for notice in notices]
     return JsonResponse({'code': 200, 'message': "通知获取成功", "data": {'notice_list': notice_list}})
 
-
-def haveRead(request):  # 某条消息已读
+@loginCheck
+def haveRead(request): #某条消息已读
     json_str = request.body
     json_obj = json.loads(json_str)
+    user = request.myUser
     rid = json_obj.get("rid")
-    notice = Notice.objects.get(rid=rid)
-    notice.read = 1  # 已读
+    notice = Notice.objects.get(Q(rid=rid)&Q(uid = user.uid))
+    notice.read = 1 #已读
     notice.save()
     return JsonResponse({'code': 200, 'message': "消息已读", "data": {}})
