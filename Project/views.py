@@ -76,7 +76,7 @@ def getProject(request):
 
 @loginCheck
 def viewProject(request):
-    user=request.myuser
+    user=request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
     tid=json_obj.get('tid')

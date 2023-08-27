@@ -12,8 +12,9 @@ def makeLink(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     status = json_obj.get("status") #权限
+    identity=json_obj.get("identity")
     did = json_obj.get("did") #文档编号
-    user = User(username="xxx",password="xxx",name="xxx")
+    user = User(username="xxx",password="xxx",name="xxx",identity=identity)
     try:
         user.save()
         token = make_token(user.uid)

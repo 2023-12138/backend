@@ -70,13 +70,19 @@ def viewTeam(request):  # 用户查看当前所属团队
     teamidlist = User_team.objects.filter(Q(uid=user.uid)&Q(is_active=1))
     teamlist = []
     tmp = {}
+    privateid=-1
     for data in teamidlist:
         team = Team.objects.get(tid=data.tid)
         tmp = model_to_dict(team)
-        creater=User_team.objects.get(Q(tid=data.tid)&Q(status="0")).uid
+        if User_team.objects.filter(Q(tid=data.tid)&Q(status="0")).exists():
+            creater=User_team.objects.get(Q(tid=data.tid)&Q(status="0")).uid
+        elif User_team.objects.filter(Q(tid=data.tid)&Q(status="3")).exists():
+            creater = User_team.objects.get(Q(tid=data.tid) & Q(status="3")).uid
         tmp['creater']=creater
         teamlist.append(tmp)
-    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'teamlist': teamlist}})
+        if data.status=="3":
+            privateid=data.tid
+    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'teamlist': teamlist,"privateTid":privateid}})
 
 
 @loginCheck

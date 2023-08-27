@@ -24,6 +24,5 @@ urlpatterns = [
     path("chat/",include('Chat.urls')),
     path("notice/",include('Notice.urls')),
     path("project/",include('Project.urls')),
-    # path("project/",include('Project.urls'))
     path("doc/",include("Doc.urls")),
 ]
