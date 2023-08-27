@@ -11,10 +11,10 @@ def allRead(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     type = json_obj.get("type")
-    noticeList  = Notice.objects.filter(Q(uid=user.uid)&Q(is_active=True)&Q(read=True)&Q(type=type))
+    noticeList  = Notice.objects.filter(Q(uid=user.uid)&Q(is_active=True)&Q(read=0)&Q(type=type))
     try:
         for obj in noticeList:
-            obj.read = False #修改为已读
+            obj.read = 1 #修改为已读
             obj.save()
         return JsonResponse({'code': 200, 'message': "修改成功", 'data': {}})
     except Exception as e:
@@ -27,7 +27,7 @@ def oneRead(request):
     nid = json_obj.get("nid")
     notice = Notice.objects.get(noticeId=nid)
     try:
-        notice.read = False #修改为已读
+        notice.read = 1 #修改为已读
         notice.save()
         return JsonResponse({'code': 200, 'message': "修改成功", 'data': {}})
     except Exception as e:
@@ -72,3 +72,11 @@ def getNotice(request): #返回群聊通知列表
     notice_list = [model_to_dict(notice) for notice in notices]
     return JsonResponse({'code': 200, 'message': "通知获取成功", "data": {'notice_list': notice_list}})
 
+def haveRead(request): #某条消息已读
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    rid = json_obj.get("rid")
+    notice = Notice.objects.get(rid=rid)
+    notice.read = 1 #已读
+    notice.save()
+    return JsonResponse({'code': 200, 'message': "消息已读", "data": {}})
