@@ -25,7 +25,7 @@ def createDoc(request): #创建文档
         doc = Doc(docname=docname,pid=pid)
         try:
             doc.save()
-            return JsonResponse({'code': 200, 'message': '创建成功', 'data': {}})
+            return JsonResponse({'code': 200, 'message': '创建成功', 'data': {"docid":doc.docId}})
         except Exception as e:
             return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
@@ -78,7 +78,7 @@ def getDoc(request): #获取文档
             content = DocContent.objects.get(docId=obj.docId) #目前是只能拿最新的文档内容
         else:
             content = ""
-        data.append({"docname":obj.docname,"content":content})
+        data.append({"docid":obj.docId,"docname":obj.docname,"content":content})
     return JsonResponse({'code': 200, 'message': '获取文档成功', 'data': {"doclist":data}})
 
 @loginCheck
