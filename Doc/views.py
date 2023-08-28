@@ -67,20 +67,40 @@ def renameDoc(request):
             return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
 @loginCheck
-def getDoc(request): #获取文档
+def getDoc(request): #获取文档内容
     json_str = request.body
     json_obj = json.loads(json_str)
-    pid = json_obj.get("pid")
-    docList = Doc.objects.filter(Q(pid=pid)&Q(is_active=True))
-    data = []
-    for obj in docList:
-        if DocContent.objects.filter(docId=obj.docId).exists():
-            content = DocContent.objects.get(docId=obj.docId) #目前是只能拿最新的文档内容
-        else:
-            content = ""
-        data.append({"docid":obj.docId,"docname":obj.docname,"content":content})
-    return JsonResponse({'code': 200, 'message': '获取文档成功', 'data': {"doclist":data}})
-
+    docid=json_obj.get("docid")
+    if not Doc.objects.filter(Q(docId=docid)&Q(is_active=True)).exists():
+        return JsonResponse({'code':400,'message':"文档不存在","data":{}})
+    else:obj=Doc.objects.get(Q(docId=docid)&Q(is_active=True))
+    if DocContent.objects.filter(Q(docId=docid)&Q(is_active=True)).exists():
+        content=DocContent.objects.filter(Q(docId=docid)&Q(is_active=True)).last().docContent
+    else:
+        content=""
+    return JsonResponse({'code': 200, 'message': '获取文档成功', 'data': {"docid": obj.docId, "docname": obj.docname, "content": content}})
+    #
+    # docList = Doc.objects.filter(Q(pid=pid)&Q(is_active=True)&Q(docid=docid))
+    # data = []
+    # for obj in docList:
+    #     if DocContent.objects.filter(docId=docid).exists():
+    #         content = DocContent.objects.filter(docId=obj.docId).last().docContent #目前是只能拿最新的文档内容
+    #     else:
+    #         content = ""
+    #     data.append({"docid":obj.docId,"docname":obj.docname,"content":content})
+    # return JsonResponse({'code': 200, 'message': '获取文档成功', 'data': {"doclist":data}})
+@loginCheck
+def viewDoc(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid=json_obj.get('pid')
+    docList=Doc.objects.filter(Q(pid=pid)&Q(is_active=True))
+    doclist=[]
+    for doc in docList:
+        data={}
+        data=model_to_dict(doc)
+        doclist.append(data)
+    return JsonResponse({'code':200,'message':"查询文档列表成功",'data':{'doclist':doclist}})
 @loginCheck
 def saveDoc(request): #保存文档
     json_str = request.body
@@ -91,22 +111,28 @@ def saveDoc(request): #保存文档
     text = json_obj.get("text")
     nowTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
     doc = Doc.objects.get(docId=docid)
-    if DocContent.objects.filter(docId=doc.docId).exists(): #不是第一次
-        content = DocContent.objects.get(Q(docId=doc.docId))
-        content.docContent = text
-        content.saveTime = nowTime
-        try:
-            content.save()
-            return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
-        except Exception as e:
-            return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
-    else : #第一次
-        content = DocContent(docId=doc.docId,saveTime=nowTime)
-        try:
-            content.save()
-            return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
-        except Exception as e:
-            return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    new_content=DocContent(docId=doc.docId,docContent=text,saveTime=nowTime)
+    try:
+        new_content.save()
+        return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
+    except Exception as e:
+        return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    # if DocContent.objects.filter(docId=doc.docId).exists(): #不是第一次
+    #     content = DocContent.objects.get(Q(docId=doc.docId))
+    #     content.docContent = text
+    #     content.saveTime = nowTime
+    #     try:
+    #         content.save()
+    #         return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
+    #     except Exception as e:
+    #         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    # else : #第一次
+    #     content = DocContent(docId=doc.docId,saveTime=nowTime)
+    #     try:
+    #         content.save()
+    #         return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
+    #     except Exception as e:
+    #         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
 async def docAite(request):
     json_str = request.body
