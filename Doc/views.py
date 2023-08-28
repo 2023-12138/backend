@@ -90,7 +90,7 @@ def saveDoc(request): #保存文档
     docid = json_obj.get("docid")
     text = json_obj.get("text")
     nowTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
-    doc = Doc.objects.get(docid=docid)
+    doc = Doc.objects.get(docId=docid)
     if DocContent.objects.filter(docId=doc.docId).exists(): #不是第一次
         content = DocContent.objects.get(Q(docId=doc.docId))
         content.docContent = text
@@ -142,7 +142,7 @@ def makeLink(request): #生成链接
 
 @database_sync_to_async
 def get_doc(docid):
-    return Doc.objects.get(docid=docid)
+    return Doc.objects.get(docId=docid)
 
 @database_sync_to_async
 def notice_save(notice):
