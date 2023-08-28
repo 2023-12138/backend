@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 # mysite/asgi.py
 import os
+import  django
 from .wsgi import *
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -22,6 +23,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "summer.settings")
 django_asgi_app = get_asgi_application()
 
 import Chat.routing
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'summer.settings.prod')
+django.setup()
 
 application = ProtocolTypeRouter(
     {
