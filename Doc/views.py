@@ -34,12 +34,11 @@ def createDoc(request): #创建文档
 def delDoc(request): #删除文档
     json_str = request.body
     json_obj = json.loads(json_str)
-    docname = json_obj.get("docname")
-    pid = json_obj.get("pid")
-    if not Doc.objects.filter(Q(docname=docname) & Q(pid=pid)&Q(is_active=True)).exists():
+    docid = json_obj.get("docid")
+    if not Doc.objects.filter(Q(docid=docid)&Q(is_active=True)).exists():
         return JsonResponse({'code': 400, 'message': '该文档不存在', 'data': {}})
     else:
-        doc = Doc.objects.get(Q(docname=docname) & Q(pid=pid))
+        doc = Doc.objects.get(docid=docid)
         doc.is_active = False
         try:
             doc.save()
@@ -51,15 +50,15 @@ def delDoc(request): #删除文档
 def renameDoc(request):
     json_str = request.body
     json_obj = json.loads(json_str)
-    oldname = json_obj.get("oldname")
     newname = json_obj.get("newname")
     pid = json_obj.get("pid")
-    if not Doc.objects.filter(Q(docname=oldname) & Q(pid=pid)&Q(is_active=True)).exists():
+    docid = json_obj.get("docid")
+    if not Doc.objects.filter(Q(docid=docid)&Q(is_active=True)).exists():
         return JsonResponse({'code': 400, 'message': '该文档不存在', 'data': {}})
     elif Doc.objects.filter(Q(docname=newname) & Q(pid=pid)&Q(is_active=True)).exists():
         return JsonResponse({'code': 400, 'message': '名称重复', 'data': {}})
     else:
-        doc = Doc.objects.get(Q(docname=oldname) & Q(pid=pid)&Q(is_active=True))
+        doc = Doc.objects.get(docid=docid)
         doc.docname = newname
         try:
             doc.save()
@@ -75,7 +74,10 @@ def getDoc(request): #获取文档
     docList = Doc.objects.filter(Q(pid=pid)&Q(is_active=True))
     data = []
     for obj in docList:
-        content = DocContent.objects.get(docId=obj.docId) #目前是只能拿最新的文档内容
+        if DocContent.objects.filter(docId=obj.docId).exists():
+            content = DocContent.objects.get(docId=obj.docId) #目前是只能拿最新的文档内容
+        else:
+            content = ""
         data.append({"docname":obj.docname,"content":content})
     return JsonResponse({'code': 200, 'message': '获取文档成功', 'data': {"doclist":data}})
 
@@ -83,11 +85,12 @@ def getDoc(request): #获取文档
 def saveDoc(request): #保存文档
     json_str = request.body
     json_obj = json.loads(json_str)
-    pid = json_obj.get("pid")
-    docname = json_obj.get("docname")
+    # pid = json_obj.get("pid")
+    # docname = json_obj.get("docname")
+    docid = json_obj.get("docid")
     text = json_obj.get("text")
     nowTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
-    doc = Doc.objects.get(Q(pid=pid) & Q(docname=docname))
+    doc = Doc.objects.get(docid=docid)
     if DocContent.objects.filter(docId=doc.docId).exists(): #不是第一次
         content = DocContent.objects.get(Q(docId=doc.docId))
         content.docContent = text
@@ -109,9 +112,10 @@ async def docAite(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     aite = json_obj.get('aite') #被@的成员uid
-    docname = json_obj.get('docname')
-    pid = json_obj.get("pid")
-    doc = await get_doc(pid,docname)
+    # docname = json_obj.get('docname')
+    # pid = json_obj.get("pid")
+    docid = json_obj.get("docid")
+    doc = await get_doc(docid)
     userSocket = userSocketDict.get(aite)
     notice = Notice(uid=aite,rid=-1,docId=doc.docId,type="doc")
     await  notice_save(notice)
@@ -137,8 +141,8 @@ def makeLink(request): #生成链接
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
 @database_sync_to_async
-def get_doc(pid,docname):
-    return Doc.objects.get(Q(pid=pid)&Q(docname=docname))
+def get_doc(docid):
+    return Doc.objects.get(docid=docid)
 
 @database_sync_to_async
 def notice_save(notice):
