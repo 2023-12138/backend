@@ -57,6 +57,13 @@ def inviteUser(request):
         return JsonResponse({'code': 400, 'message': '用户没有权限邀请成员加入', 'data': {}})
     if User_team.objects.filter(Q(uid=uid) & Q(tid=tid) & Q(is_active=1)).exists():  # 判断被邀请用户是否已加入过该团队
         return JsonResponse({'code': 400, 'message': '该用户已加入团队!', 'data': {}})
+    if User_team.objects.filter(Q(uid=uid) & Q(tid=tid) & Q(is_active=0)).exists():
+        exist_data=User_team.objects.get(Q(uid=uid) & Q(tid=tid) & Q(is_active=0))
+        exist_data.is_active=1
+        try:  # 判断数据操作是否成功
+            exist_data.save()
+        except:
+            return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     new_data = User_team(uid=uid, tid=tid, status=2)
     try:  # 判断数据操作是否成功
         new_data.save()
