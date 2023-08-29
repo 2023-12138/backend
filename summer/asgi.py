@@ -8,12 +8,13 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 # mysite/asgi.py
 import os
+import  django
 from .wsgi import *
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
-
+import Chat.routing
 from Chat.routing import websocket_urlpatterns
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "summer.settings")
@@ -21,7 +22,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "summer.settings")
 # is populated before importing code that may import ORM models.
 django_asgi_app = get_asgi_application()
 
-import Chat.routing
+
+django.setup()
 
 application = ProtocolTypeRouter(
     {
