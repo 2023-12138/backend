@@ -2,13 +2,15 @@ from django.shortcuts import render
 from Tools.LoginCheck import loginCheck,asyncLoginCheck
 from django.shortcuts import render
 from Chat.models import *
-import json
 from Chat.consumers import userSocketDict
 from django.db.models import Q
 from django.http import JsonResponse
 from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async,async_to_sync
 from django.forms.models import model_to_dict
+from Tools.QiNiuYun import uploadFile
+import json
+import  datetime
 
 
 def index(request):
@@ -17,6 +19,19 @@ def index(request):
 
 def room(request, room_name):
     return render(request, "chat/room.html", {"room_name": room_name})
+
+
+def saveFile(request):
+    key = request.POST.get("key")
+    file = request.FILES.get("file")
+    nowTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
+    filename = key + "_"+ "".join(nowTime.split())
+    print(key)
+    code = uploadFile(filename, file)
+    if code == 400 :
+        return JsonResponse({'code': 400, 'message': "上传失败", "data": {}})
+    else :
+        return JsonResponse({'code': 200, 'message': "上传成功", "data": {"url":code}})
 
 @asyncLoginCheck
 async def getHistory(request):

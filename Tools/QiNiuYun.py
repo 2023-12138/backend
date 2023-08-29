@@ -4,7 +4,7 @@
 # @File : QiNiuYun.py
 # @Software: PyCharm
 from qiniu import Auth, put_data
-
+from  summer import  settings
 def uploadFile(key,file): #key是文件名,file是要上传的文件
     access_key = settings.ACCESS_KEY
     secret_key = settings.SECRET_KEY
