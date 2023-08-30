@@ -49,7 +49,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     new_chatuser = ChatUser(cid=new_chatroom.cid, from_uid=from_uid, to_uid=to_uid)
                     await self.chatuser_save(new_chatuser)
                     cid = await self.get_cid(from_uid, to_uid)
-                new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid,uid=to_uid)
+                new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid,uid=to_uid,type=msgType)
                 await self.record_save(new_record)
                 toUserSocket = userSocketDict.get(to_uid)
                 data = {"message": message, "senderId": self.uid, "senderName":self.uname ,"receiverId": to_uid, "teamId": tid, "time": nowTime,
@@ -67,7 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if to_uid == "":  # 群聊
                 userlist = await self.get_userlist(tid)  # 团队成员列表
                 cid = await self.get_cid2(tid)  # 聊天室id
-                new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid,tid=tid)
+                new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid,tid=tid,type=msgType)
                 await self.record_save(new_record)
                 aite = text_data_json.get('aite')
                 # await self.group_chat(aite, message, new_record, nowTime, tid, userlist)

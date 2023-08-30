@@ -70,6 +70,8 @@ def createDoc(request):  # 创建文档
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
+    if File.objects.filter(Q(pid=pid)&Q(father=father)&Q(filename=docname)):
+        return JsonResponse({'code': 400, 'message': '文件名重复', 'data': {}})
     groupid = project.groupid
     try:
         padid = myPad.createGroupPad(groupid, docname).get('padID')
