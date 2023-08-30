@@ -35,7 +35,6 @@ def createGroup(pid):
     return groupid
 
 
-@loginCheck
 def createAuthor(uid):
     if User.objects.filter(Q(uid=uid) & Q(is_active=True)):
         username = User.objects.get(Q(uid=uid) & Q(is_active=True)).username
@@ -47,7 +46,7 @@ def createAuthor(uid):
 
 @loginCheck
 def createSession(groupid, authorid):
-    sessionid = myPad.createSession(groupid, authorid, int(time.time())).get('sessionID')
+    sessionid = myPad.createSession(groupid, authorid, 9999999999).get('sessionID')
     data = Session(groupid=groupid, authorid=authorid, sessionid=sessionid)
     try:
         data.save()
