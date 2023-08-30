@@ -217,15 +217,20 @@ def makeLink(request):  # 生成链接
     json_str = request.body
     json_obj = json.loads(json_str)
     identity = json_obj.get("identity")
-    docId = json_obj.get("docId")  # 文档编号
+    docid = json_obj.get("docid")  # 文档编号
     user = User(username="xxx", password="xxx", name="xxx", identity=identity)
     try:
         user.save()
-        token = make_token(user.uid)
-        link = "http://127.0.0.1:8000?token=" + str(token) + "&docId=" + str(docId)
-        return JsonResponse({'code': 200, 'message': '链接生成成功', 'data': {'link': link}})
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    authorid=createAuthor(user.uid)
+    user.authorid=authorid
+    try:
+        user.save()
+    except Exception as e:
+        return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+
+
 
 
 @database_sync_to_async
