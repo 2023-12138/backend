@@ -2,7 +2,8 @@ import json
 from django.http import JsonResponse
 from Tools.LoginCheck import loginCheck
 from django.db.models import Q
-from Project.models import Project
+from Project.models import *
+from User.models import User
 from django.forms.models import model_to_dict
 from Doc.views import *
 
@@ -87,6 +88,25 @@ def renameProject(request):
 
 
 @loginCheck
+def renameProjectInform(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get('pid')
+    project_inform = json_obj.get('project_inform')
+    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
+        data = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    else:
+        return JsonResponse({'code': 400, 'message': '无该项目id对应的项目', 'data': {}})
+    try:
+        data.project_inform = project_inform
+        data.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    return JsonResponse({'code': 200, 'message': '项目描述重命名成功', 'data': {}})
+
+
+@loginCheck
 def getProject(request):
     user = request.myUser
     json_str = request.body
@@ -109,6 +129,76 @@ def viewProject(request):
     projects = []
     for project in projectlist:
         data = {}
-        data = model_to_dict(project)
+        user = User.objects.filter(Q(uid=project.uid) & Q(is_active=True)).first()
+        username = user.name
+        data['project'] = model_to_dict(project)
+        data['project']['username'] = username
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
+
+@loginCheck
+def searchProject(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    tid = json_obj.get('tid')
+    key = json_obj.get('key')
+    project_list = Project.objects.filter(Q(tid=tid) & Q(project_name__icontains=key))
+    projects = []
+    for project in project_list:
+        data = {}
+        data = model_to_dict(project)
+        projects.append(data)
+    return JsonResponse({'code': 200, 'message': '搜索成功', 'data': {'project_list': projects}})
+
+def createProto(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get("pid")
+    protoname = json_obj.get("protoname")
+    prototype = Prototype(pid=pid,protoname=protoname)
+    try:
+        prototype.save()
+        return JsonResponse({'code': 400, 'message': '创建成功', 'data': {}})
+    except Exception as e:
+        print(e.args[0])
+        return JsonResponse({'code': 200, 'message': '创建失败', 'data': {}})
+
+@loginCheck
+def saveInfo(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    protoid = json_obj.get("protoid")
+    style  = json_obj.get("style")
+    data = json_obj.get("data")
+    info = {"style":style,"data":data}
+    if Protoinfo.objects.filter(proto_info_id = protoid).exists():
+        protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
+        protoinfo.info = info
+    else:
+        protoinfo = Protoinfo(proto_info_id=protoid,info=info)
+    try:
+        protoinfo.save()
+        return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
+    except Exception as e:
+        return JsonResponse({'code': 400, 'message': '保存失败', 'data': {}})
+
+@loginCheck
+def getProto(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get("pid")
+    protoList = Prototype.objects.filter(pid = pid)
+    protolist = []
+    for obj in protoList:
+        protolist.append({"protoid":obj.protoid,"protoname":obj.protoname})
+    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"protolist":protolist}})
+
+@loginCheck
+def getProtoInfo(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    protoid = json_obj.get("protoid")
+    protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
+    data = protoinfo.info
+    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
