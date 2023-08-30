@@ -21,7 +21,7 @@ def createProject(request):
         new_project.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    groupid=createGroup(new_project.pid)
+    groupid=createGroup(new_project.pid,tid)
     new_project.groupid=groupid
     try:
         new_project.save()

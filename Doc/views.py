@@ -22,9 +22,9 @@ myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628
 
 
 @loginCheck
-def createGroup(pid):
+def createGroup(pid,tid):
     groupid = myPad.createGroup().get('groupID')
-    userlist = User_team.objects.filter(Q(pid=pid) & Q(is_active=True))
+    userlist = User_team.objects.filter(Q(tid=tid) & Q(is_active=True))
     for user_data in userlist:
         try:
             user = User.objects.get(Q(uid=user_data.uid) & Q(is_active=True))
