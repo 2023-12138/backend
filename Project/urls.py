@@ -5,6 +5,7 @@ urlpatterns = [
     path('deleteProject',views.deleteProject),#删除项目
     path('recoverProject',views.recoverProject),#恢复项目
     path('renameProject',views.renameProject),#重命名项目
+    path('renameProjectInform',views.renameProjectInform),#重命名项目描述
     path('viewProject',views.viewProject),#查看团队下属项目
     path('getProject',views.getProject),#获取某个项目信息
     path('searchProject',views.searchProject),#搜索项目

@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from Tools.LoginCheck import loginCheck
 from django.db.models import Q
 from Project.models import Project
+from User.models import User
 from django.forms.models import model_to_dict
 
 
@@ -81,6 +82,25 @@ def renameProject(request):
 
 
 @loginCheck
+def renameProjectInform(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get('pid')
+    project_inform = json_obj.get('project_inform')
+    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
+        data = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    else:
+        return JsonResponse({'code': 400, 'message': '无该项目id对应的项目', 'data': {}})
+    try:
+        data.project_inform = project_inform
+        data.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    return JsonResponse({'code': 200, 'message': '项目描述重命名成功', 'data': {}})
+
+
+@loginCheck
 def getProject(request):
     user = request.myUser
     json_str = request.body
@@ -103,7 +123,10 @@ def viewProject(request):
     projects = []
     for project in projectlist:
         data = {}
-        data = model_to_dict(project)
+        user = User.objects.filter(Q(uid=project.uid) & Q(is_active=True)).first()
+        username = user.name
+        data['project'] = model_to_dict(project)
+        data['project']['username'] = username
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
 
