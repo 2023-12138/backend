@@ -106,3 +106,19 @@ def viewProject(request):
         data = model_to_dict(project)
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
+
+@loginCheck
+def searchProject(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    tid = json_obj.get('tid')
+    key = json_obj.get('key')
+    project_list = Project.objects.filter(Q(tid=tid) & Q(project_name__icontains=key))
+    projects = []
+    for project in project_list:
+        data = {}
+        data = model_to_dict(project)
+        projects.append(data)
+    return JsonResponse({'code': 200, 'message': '搜索成功', 'data': {'project_list': projects}})
+
