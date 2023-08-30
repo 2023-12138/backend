@@ -4,7 +4,7 @@ from Tools.LoginCheck import loginCheck
 from django.db.models import Q
 from Project.models import Project
 from django.forms.models import model_to_dict
-
+from Doc.views import *
 
 @loginCheck
 def createProject(request):
@@ -16,6 +16,12 @@ def createProject(request):
     tid = json_obj.get('tid')
     uid = user.uid
     new_project = Project(project_name=project_name, project_inform=project_inform, tid=tid, uid=uid)
+    try:
+        new_project.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    groupid=createGroup(new_project.pid)
+    new_project.groupid=groupid
     try:
         new_project.save()
     except:

@@ -10,9 +10,10 @@ class User(models.Model):#有自增主键 id,记录用户基本信息
     email = models.EmailField('email', default='null') #邮箱
     avatar = models.TextField('avatar',null=True) #base64头像
     identity = models.IntegerField('identity',default=0) #用户身份0代表普通用户,1代表仅可查看游客,2代表可编辑游客
+    authorid=models.CharField('authorid',max_length=55)
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
+
 
 class Captcha(models.Model):#记录验证码
     email = models.CharField('email',primary_key = True,max_length=50) #邮箱
     captcha = models.CharField('captcha',max_length=10) #用户的验证码
-
