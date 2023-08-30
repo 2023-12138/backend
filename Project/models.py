@@ -12,4 +12,7 @@ class Prototype(models.Model):
     protoid = models.AutoField("protoid",primary_key = True) #原型id
     pid = models.IntegerField("pid") #原型所属的项目id
     protoname = models.CharField("protoname",max_length=25) #原型设计名称
-    info = models.JSONField("info") #保存style和data信息
+
+class Protoinfo(models.Model):
+    proto_info_id = models.IntegerField("proto_info_id",primary_key=True)
+    info = models.JSONField("info")  # 保存style和data信息

@@ -10,17 +10,17 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db.models import Q
 from django.http import JsonResponse
 from Notice.models import *
-
+from User.models import *
 userSocketDict = {}
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     uid = -1
-
+    uname = ""
     async def connect(self):
         self.uid = int(self.scope["url_route"]["kwargs"]["uid"])
         userSocketDict[self.uid] = self
-
+        self.uname = await self.get_username(self.uid)
         # Join room group
 
         await self.accept()
@@ -52,7 +52,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid,uid=to_uid)
                 await self.record_save(new_record)
                 toUserSocket = userSocketDict.get(to_uid)
-                data = {"message": message, "senderId": self.uid, "receiverId": to_uid, "teamId": tid, "time": nowTime,
+                data = {"message": message, "senderId": self.uid, "senderName":self.uname ,"receiverId": to_uid, "teamId": tid, "time": nowTime,
                          "rid": new_record.rid}
                 if toUserSocket != None:  # 成员在线
                     await toUserSocket.send(text_data=json.dumps(
@@ -79,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 await self.notice_save(new_aite)
                                 toUserSocket = userSocketDict.get(user.uid)
                                 if toUserSocket != None:  # 成员在线
-                                    data = {"message": message, "senderId": self.uid, "receiverId": "", "teamId": tid,
+                                    data = {"message": message, "senderId": self.uid, "senderName":self.uname ,"receiverId": "", "teamId": tid,
                                          "time": nowTime,
                                          "rid": new_record.rid}
                                     await toUserSocket.send(text_data=json.dumps(
@@ -92,7 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             async for user in userlist:
                                 toUserSocket = userSocketDict.get(user.uid)
                                 if toUserSocket != None:  # 成员在线
-                                    data = {"message": message, "senderId": self.uid, "receiverId": "", "teamId": tid,
+                                    data = {"message": message, "senderId": self.uid, "senderName":self.uname ,"receiverId": "", "teamId": tid,
                                              "time": nowTime,
                                              "rid": new_record.rid}
                                     if user.uid != i:
@@ -107,7 +107,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                              "data":data}))
                 if len(aite) == 0:  # 该条消息无艾特
                     async for user in userlist:
-                        data = {"message": message, "senderId": self.uid, "receiverId": "", "teamId": tid,
+                        data = {"message": message, "senderId": self.uid, "senderName":self.uname ,"receiverId": "", "teamId": tid,
                                 "time": nowTime,
                                 "rid": new_record.rid}
                         toUserSocket = userSocketDict.get(user.uid)
@@ -154,3 +154,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def notice_save(self, notice):
         notice.save()
+
+    @database_sync_to_async
+    def get_username(self,uid):
+        user = User.objects.get(uid=uid)
+        return user.username

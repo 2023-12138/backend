@@ -2,7 +2,7 @@ import json
 from django.http import JsonResponse
 from Tools.LoginCheck import loginCheck
 from django.db.models import Q
-from Project.models import Project
+from Project.models import *
 from django.forms.models import model_to_dict
 
 
@@ -110,6 +110,52 @@ def viewProject(request):
 @loginCheck
 def createProto(request):
     json_str = request.body
-    print(json_str)
-    # json_obj = json.loads(json_str)
-    # style = json_obj.get()
+    json_obj = json.loads(json_str)
+    pid = json_obj.get("pid")
+    protoname = json_obj.get("protoname")
+    prototype = Prototype(pid=pid,protoname=protoname)
+    try:
+        prototype.save()
+        return JsonResponse({'code': 400, 'message': '创建成功', 'data': {}})
+    except Exception as e:
+        print(e.args[0])
+        return JsonResponse({'code': 200, 'message': '创建失败', 'data': {}})
+
+@loginCheck
+def saveInfo(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    protoid = json_obj.get("protoid")
+    style  = json_obj.get("style")
+    data = json_obj.get("data")
+    info = {"style":style,"data":data}
+    if Protoinfo.objects.filter(proto_info_id = protoid).exists():
+        protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
+        protoinfo.info = info
+    else:
+        protoinfo = Protoinfo(proto_info_id=protoid,info=info)
+    try:
+        protoinfo.save()
+        return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
+    except Exception as e:
+        return JsonResponse({'code': 400, 'message': '保存失败', 'data': {}})
+
+@loginCheck
+def getProto(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get("pid")
+    protoList = Prototype.objects.filter(pid = pid)
+    protolist = []
+    for obj in protoList:
+        protolist.append({"protoid":obj.protoid,"protoname":obj.protoname})
+    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"protolist":protolist}})
+
+@loginCheck
+def getProtoInfo(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    protoid = json_obj.get("protoid")
+    protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
+    data = protoinfo.info
+    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
