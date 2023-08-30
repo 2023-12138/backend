@@ -66,7 +66,6 @@ def createDoc(request):  # 创建文档     #处理同名文件
     pid = json_obj.get('pid')
     depth = json_obj.get('depth')
     father = json_obj.get("father")
-    uid=json_obj.get('uid')
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
@@ -88,9 +87,8 @@ def createDoc(request):  # 创建文档     #处理同名文件
         newFile.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    user=User.objects.get(Q(uid=uid)&Q(is_active=True))
     groupid=project.groupid
-    sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid))
+    sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid)).sessionid
     return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+newDoc.padid,'session':sessionid}})
 
 @loginCheck

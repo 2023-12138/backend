@@ -168,14 +168,19 @@ def copyProject(request):
         new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
                               tid=project.tid, uid=user.uid)
         new_project.groupid = createGroup(new_project.pid, new_project.tid)
-        new_project.save()
+        new_project.save()  # 保存项目
         new_pid = new_project.pid
         prototype = Prototype.objects.filter(Q(pid=pid)).first()
         new_prototype = Prototype(pid=new_pid, protoname=prototype.protoname)
         new_prototype.save()
         protoinfo = Protoinfo.objects.filter(Q(proto_info_id=prototype.protoid)).first()
         new_protoinfo = Protoinfo(proto_info_id=new_prototype.protoid, info=protoinfo.info)
-        new_protoinfo.save()
+        new_protoinfo.save()  # 保存原型
+        doc = Doc.objects.filter(Q(pid=pid)).first()
+        print(doc)
+        new_padid = myPad.createGroupPad(new_project.groupid, doc.docname).get('padID')
+        new_doc = Doc(pid=new_pid, docname=doc.docname, padid=new_padid)
+        new_doc.save()  # 保存文档
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目复制成功', 'data': {}})
