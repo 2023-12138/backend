@@ -50,7 +50,7 @@ async def getHistory(request):
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
             data = {"message": obj.content, "senderId": obj.sender, "receiverId":"","teamId": tid, "time": nowTime,"rid":obj.rid}
             await userSocket.send(text_data=json.dumps({
-                "type": "chat",
+                "type": obj.type,
                 "data": data
             }))
     elif senderId != "":  # 私聊消息记录
@@ -74,7 +74,7 @@ async def getHistory(request):
             data = {"message": obj.content, "senderId": obj.sender, "receiverId":obj.uid,"teamId":"","time": nowTime,"rid":obj.rid}
             await userSocket.send(
                 text_data=json.dumps({
-                    "type": "chat",
+                    "type": obj.type,
                     "data": data
                 }))
     return JsonResponse({'code': 200, 'message': "历史记录获取成功", "data": {}})
