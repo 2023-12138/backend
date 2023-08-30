@@ -22,7 +22,7 @@ def createProject(request):
         new_project.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    groupid=createGroup(new_project.pid,tid)
+    groupid= createGroup(tid)
     new_project.groupid=groupid
     try:
         new_project.save()
@@ -167,7 +167,7 @@ def copyProject(request):
         project = Project.objects.filter(Q(pid=pid)).first()
         new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
                               tid=project.tid, uid=user.uid)
-        new_project.groupid = createGroup(new_project.pid, new_project.tid)
+        new_project.groupid = createGroup(new_project.tid)
         new_project.save()  # 保存项目
         new_pid = new_project.pid
         prototype_list = Prototype.objects.filter(Q(pid=pid))

@@ -22,7 +22,7 @@ myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628
                            'http://43.138.59.36:10010/api')
 
 
-def createGroup(pid,tid):
+def createGroup(tid):
     groupid = myPad.createGroup().get('groupID')
     userlist = User_team.objects.filter(Q(tid=tid) & Q(is_active=True))
     for user_data in userlist:
@@ -51,6 +51,7 @@ def createSession(groupid, authorid):
         data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库操作失败', 'data': {}})
+    return sessionid
 
 
 def deleteSession(sessionid):
@@ -223,12 +224,19 @@ def makeLink(request):  # 生成链接
         user.save()
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    # link = "http://127.0.0.1:8000?token=" + str(token) + "&docId=" + str(docId)
     authorid=createAuthor(user.uid)
-    user.authorid=authorid
-    try:
-        user.save()
-    except Exception as e:
-        return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    doc=Doc.objects.get(Q(docid=docid)&Q(is_active=True))
+    padid=doc.padid
+    pid=doc.pid
+    project=Project.objects.get(Q(pid=pid)&Q(is_active=True))
+    groupid=project.groupid
+    sessionid=createSession(groupid,authorid)
+    if identity=='1':#代表仅查看游客
+        padid=myPad.getReadOnlyID(padid).get('readOnlyID')
+    link = "http://43.138.59.36:10010/p/&padID=" + padid + "&sessionID=" + sessionid
+    return JsonResponse({'code':200,'message':'生成链接成功','data':{'url':link}})
+
 
 
 
