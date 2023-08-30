@@ -88,7 +88,7 @@ def createDoc(request):  # 创建文档     #处理同名文件
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     groupid=project.groupid
-    sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid))
+    sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid)).sessionid
     return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+newDoc.padid,'session':sessionid}})
 
 @loginCheck
