@@ -6,6 +6,7 @@ from Project.models import *
 from User.models import User
 from django.forms.models import model_to_dict
 from Doc.views import *
+from File.models import  *
 
 @loginCheck
 def createProject(request):
@@ -25,6 +26,11 @@ def createProject(request):
     new_project.groupid=groupid
     try:
         new_project.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    newFile = File(filename=project_name, pid = new_project.pid,father=-1,depth=0,type=0)
+    try:
+        newFile.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目创建成功', 'data': {'pid': new_project.pid}})
