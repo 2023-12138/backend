@@ -34,7 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         tmp = json.loads(text_data)
         text_data_json = tmp["data"]
         msgType = tmp["type"]
-        if msgType == "chat" or msgType == "chat_pic": #是聊天消息
+        if msgType == "chat" or msgType == "chat_pic" or msgType == "chat_file": #是聊天消息
             message = text_data_json["message"]
             # 需要信息{"uid","tid","teamname"}
             to_uid = text_data_json.get('to_uid')  # 私聊对象id
@@ -71,7 +71,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.record_save(new_record)
                 aite = text_data_json.get('aite')
                 # await self.group_chat(aite, message, new_record, nowTime, tid, userlist)
-                if len(aite) >0:
+                if aite!=None and len(aite) >0:
                     for i in aite:
                         if i == -1: # @所有人
                             async for user in userlist:
@@ -105,7 +105,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                             {
                                              "type": "chat_aite",
                                              "data":data}))
-                if len(aite) == 0:  # 该条消息无艾特
+                else:  # 该条消息无艾特
                     async for user in userlist:
                         data = {"message": message, "senderId": self.uid, "senderName":self.uname ,"receiverId": "", "teamId": tid,
                                 "time": nowTime,
