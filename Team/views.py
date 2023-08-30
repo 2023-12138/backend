@@ -8,6 +8,8 @@ from Tools import *
 from Tools.LoginCheck import loginCheck
 from User.models import *
 from Chat.models import *
+from Doc.views import *
+from Doc.models import *
 
 
 # Create your views here.
@@ -69,6 +71,10 @@ def inviteUser(request):
         new_data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    projectlist=Project.objects.filter(Q(tid=tid)&Q(is_active=True))
+    user=User.objects.get(Q(uid=uid)&Q(is_active=True))
+    for project in projectlist:
+        createSession(project.groupid,user.authorid)
     return JsonResponse({'code': 200, 'message': '邀请成功', 'data': {}})
 
 
@@ -115,6 +121,11 @@ def deleteUser(request):  # 删除用户
         data2.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    projectlist=Project.objects.filter(Q(tid=tid)&Q(is_active=True))
+    user=User.objects.get(Q(uid=uid)&Q(is_active=True))
+    for project in projectlist:
+        sessionid=Session.objects.get(Q(groupid=project.groupid)&Q(authorid=user.authorid)).sessionid
+        deleteSession(sessionid)
     return JsonResponse({'code': 200, 'message': '删除用户成功', 'data': {}})
 
 

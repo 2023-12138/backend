@@ -9,6 +9,7 @@ from User.models import *
 from Tools.EmailCheck import emailCheck, createCaptcha
 from Tools.MakeToken import make_token
 from Tools.LoginCheck import loginCheck
+from Doc.views import *
 
 
 # 注册
@@ -61,6 +62,12 @@ def userRegister(request):
         private_data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    authorid=createAuthor(newUser.uid)
+    newUser.authorid=authorid
+    try:
+        newUser.save()
+    except Exception as e:
+        return JsonResponse({'code': 500, 'message': "数据库保存失败", 'data': {}})
     return JsonResponse({'code': 200, 'message': "注册成功", 'data': {}})
 
 
