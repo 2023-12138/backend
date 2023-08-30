@@ -15,6 +15,7 @@ from User.models import *
 from Team.models import *
 from Notice.models import *
 from Project.models import *
+from File.models import *
 from py_etherpad import EtherpadLiteClient
 
 myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628c4b24a9150a1',
@@ -63,10 +64,15 @@ def createDoc(request):  # 创建文档     #处理同名文件
     json_obj = json.loads(json_str)
     docname = json_obj.get('docname')
     pid = json_obj.get('pid')
+    depth = json_obj.get('depth')
+    father = json_obj.get("father")
+    uid=json_obj.get('uid')
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
+    if File.objects.filter(Q(pid=pid)&Q(father=father)&Q(filename=docname)):
+        return JsonResponse({'code': 400, 'message': '文件名重复', 'data': {}})
     groupid = project.groupid
     try:
         padid = myPad.createGroupPad(groupid, docname).get('padID')
@@ -77,6 +83,12 @@ def createDoc(request):  # 创建文档     #处理同名文件
         newDoc.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    newFile = File(filename=docname, pid=pid, father=father, depth=depth, type=1,docID=newDoc.docId)
+    try:
+        newFile.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    user=User.objects.get(Q(uid=uid)&Q(is_active=True))
     groupid=project.groupid
     sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid))
     return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+newDoc.padid,'session':sessionid}})

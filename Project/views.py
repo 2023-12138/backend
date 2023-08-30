@@ -6,6 +6,7 @@ from Project.models import *
 from User.models import User
 from django.forms.models import model_to_dict
 from Doc.views import *
+from File.models import  *
 
 @loginCheck
 def createProject(request):
@@ -25,6 +26,11 @@ def createProject(request):
     new_project.groupid=groupid
     try:
         new_project.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    newFile = File(filename=project_name, pid = new_project.pid,father=-1,depth=0,type=0)
+    try:
+        newFile.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目创建成功', 'data': {'pid': new_project.pid}})
@@ -150,6 +156,29 @@ def searchProject(request):
         data = model_to_dict(project)
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '搜索成功', 'data': {'project_list': projects}})
+
+@loginCheck
+def copyProject(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get('pid')
+    try:
+        project = Project.objects.filter(Q(pid=pid)).first()
+        new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
+                              tid=project.tid, uid=user.uid)
+        new_project.groupid = createGroup(new_project.pid, new_project.tid)
+        new_project.save()
+        new_pid = new_project.pid
+        prototype = Prototype.objects.filter(Q(pid=pid)).first()
+        new_prototype = Prototype(pid=new_pid, protoname=prototype.protoname)
+        new_prototype.save()
+        protoinfo = Protoinfo.objects.filter(Q(proto_info_id=prototype.protoid)).first()
+        new_protoinfo = Protoinfo(proto_info_id=new_prototype.protoid, info=protoinfo.info)
+        new_protoinfo.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    return JsonResponse({'code': 200, 'message': '项目复制成功', 'data': {}})
 
 def createProto(request):
     json_str = request.body
