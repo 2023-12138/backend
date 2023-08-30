@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name="project",
             name="create_time",
             field=models.DateTimeField(
-                auto_now_add=True, default=0, verbose_name="create_time"
+                auto_now_add=True, verbose_name="create_time"
             ),
             preserve_default=False,
         ),
