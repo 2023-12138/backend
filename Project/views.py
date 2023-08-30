@@ -163,24 +163,18 @@ def copyProject(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')
-    project = Project.objects.filter(Q(pid=pid)).first()
-    new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
-                          tid=project.tid, uid=user.uid)
-    new_project.groupid = createGroup(new_project.pid, new_project.tid)
     try:
+        project = Project.objects.filter(Q(pid=pid)).first()
+        new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
+                              tid=project.tid, uid=user.uid)
+        new_project.groupid = createGroup(new_project.pid, new_project.tid)
         new_project.save()
-    except:
-        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    new_pid = new_project.pid
-    prototype = Prototype.objects.filter(Q(pid=pid)).first()
-    new_prototype = Prototype(pid=new_pid, protoname=prototype.protoname)
-    try:
+        new_pid = new_project.pid
+        prototype = Prototype.objects.filter(Q(pid=pid)).first()
+        new_prototype = Prototype(pid=new_pid, protoname=prototype.protoname)
         new_prototype.save()
-    except:
-        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    protoinfo = Protoinfo.objects.filter(Q(proto_info_id=prototype.protoid)).first()
-    new_protoinfo = Protoinfo(proto_info_id=new_prototype.protoid, info=protoinfo.info)
-    try:
+        protoinfo = Protoinfo.objects.filter(Q(proto_info_id=prototype.protoid)).first()
+        new_protoinfo = Protoinfo(proto_info_id=new_prototype.protoid, info=protoinfo.info)
         new_protoinfo.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
