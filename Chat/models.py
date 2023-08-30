@@ -22,4 +22,4 @@ class Record(models.Model):
     uid=models.IntegerField('uid',null=True)
     tid=models.IntegerField('tid',null=True)
     is_active = models.BooleanField('is_active',default=True)
-    type = models.CharField('type',max_length=25) #chat or chat_pic
+    type = models.CharField('type',max_length=25,default="chat") #chat or chat_pic
