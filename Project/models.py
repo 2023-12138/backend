@@ -7,3 +7,9 @@ class Project(models.Model):
     tid = models.IntegerField('tid')  # 所属团队
     uid = models.IntegerField('uid')  # 创建者
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
+
+class Prototype(models.Model):
+    protoid = models.AutoField("protoid",primary_key = True) #原型id
+    pid = models.IntegerField("pid") #原型所属的项目id
+    protoname = models.CharField("protoname",max_length=25) #原型设计名称
+    info = models.JSONField("info") #保存style和data信息

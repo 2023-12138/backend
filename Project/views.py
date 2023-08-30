@@ -106,3 +106,10 @@ def viewProject(request):
         data = model_to_dict(project)
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
+
+@loginCheck
+def createProto(request):
+    json_str = request.body
+    print(json_str)
+    # json_obj = json.loads(json_str)
+    # style = json_obj.get()
