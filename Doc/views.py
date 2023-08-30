@@ -21,7 +21,6 @@ myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628
                            'http://43.138.59.36:10010/api')
 
 
-@loginCheck
 def createGroup(pid,tid):
     groupid = myPad.createGroup().get('groupID')
     userlist = User_team.objects.filter(Q(tid=tid) & Q(is_active=True))
@@ -44,7 +43,6 @@ def createAuthor(uid):
     return authorid
 
 
-@loginCheck
 def createSession(groupid, authorid):
     sessionid = myPad.createSession(groupid, authorid, 9999999999).get('sessionID')
     data = Session(groupid=groupid, authorid=authorid, sessionid=sessionid)
@@ -54,7 +52,6 @@ def createSession(groupid, authorid):
         return JsonResponse({'code': 400, 'message': '数据库操作失败', 'data': {}})
 
 
-@loginCheck
 def deleteSession(sessionid):
     myPad.deleteSession(sessionid)
 
