@@ -7,7 +7,7 @@ class Project(models.Model):
     tid = models.IntegerField('tid')  # 所属团队
     uid = models.IntegerField('uid')  # 创建者
     groupid = models.CharField('groupid', max_length=55)
-    create_time = models.DateTimeField('create_time', null=True)  # 创建时间   !!!需要修改
+    create_time = models.DateTimeField('create_time', auto_now_add=True)  # 创建时间
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
 
 class Prototype(models.Model):

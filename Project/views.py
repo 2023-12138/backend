@@ -131,8 +131,8 @@ def viewProject(request):
         data = {}
         user = User.objects.filter(Q(uid=project.uid) & Q(is_active=True)).first()
         username = user.name
-        data['project'] = model_to_dict(project)
-        data['project']['username'] = username
+        data = model_to_dict(project)
+        data['username'] = username
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
 
