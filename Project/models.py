@@ -6,6 +6,7 @@ class Project(models.Model):
     project_inform = models.TextField('project_inform', max_length=255)  # 项目信息
     tid = models.IntegerField('tid')  # 所属团队
     uid = models.IntegerField('uid')  # 创建者
+    create_time = models.DateTimeField('create_time', null=True)  # 创建时间   !!!需要修改
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
 
 class Prototype(models.Model):
