@@ -182,7 +182,7 @@ def copyProject(request):
         for doc in doc_list:
             new_padid = myPad.createGroupPad(new_project.groupid, doc.docname).get('padID')
             new_doc = Doc(pid=new_pid, docname=doc.docname, padid=new_padid)
-            myPad.copyPad(new_padid, doc.padid, True)
+            myPad.copyPad(doc.padid, new_padid, True)
             new_doc.save()  # 保存文档
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
