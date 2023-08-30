@@ -22,7 +22,7 @@ myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628
                            'http://43.138.59.36:10010/api')
 
 
-def createGroup(pid,tid):
+def createGroup(tid):
     groupid = myPad.createGroup().get('groupID')
     userlist = User_team.objects.filter(Q(tid=tid) & Q(is_active=True))
     for user_data in userlist:
