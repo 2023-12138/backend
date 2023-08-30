@@ -66,11 +66,12 @@ def inviteUser(request):
             exist_data.save()
         except:
             return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    new_data = User_team(uid=uid, tid=tid, status=2)
-    try:  # 判断数据操作是否成功
-        new_data.save()
-    except:
-        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    else:
+        new_data = User_team(uid=uid, tid=tid, status=2)
+        try:  # 判断数据操作是否成功
+            new_data.save()
+        except:
+            return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     projectlist=Project.objects.filter(Q(tid=tid)&Q(is_active=True))
     user=User.objects.get(Q(uid=uid)&Q(is_active=True))
     for project in projectlist:

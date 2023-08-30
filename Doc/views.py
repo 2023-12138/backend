@@ -57,12 +57,12 @@ def deleteSession(sessionid):
 
 
 @loginCheck
-def createDoc(request):  # 创建文档
+def createDoc(request):  # 创建文档     #处理同名文件
+    user=request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
     docname = json_obj.get('docname')
     pid = json_obj.get('pid')
-    uid=json_obj.get('uid')
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
@@ -77,12 +77,25 @@ def createDoc(request):  # 创建文档
         newDoc.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    user=User.objects.get(Q(uid=uid)&Q(is_active=True))
     groupid=project.groupid
     sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid))
     return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+newDoc.padid,'session':sessionid}})
 
 @loginCheck
+def openDoc(request):
+    user=request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    #docname = json_obj.get('docname')
+    docid=json_obj.get('docid')
+    pid = json_obj.get('pid')
+    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
+        project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    else:
+        return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
+    doc=Doc.objects.get(Q(docid=docid)&Q(is_active=True))
+    groupid = project.groupid
+    sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid))
 
 @loginCheck
 def delDoc(request):  # 删除文档
