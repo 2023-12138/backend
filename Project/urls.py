@@ -8,4 +8,5 @@ urlpatterns = [
     path('viewProject',views.viewProject),#查看团队下属项目
     path('getProject',views.getProject),#获取某个项目信息
     path('searchProject',views.searchProject),#搜索项目
+    path('createProto',views.createProject),#创建项目原型
 ]

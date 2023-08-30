@@ -122,3 +122,8 @@ def searchProject(request):
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '搜索成功', 'data': {'project_list': projects}})
 
+def createProto(request):
+    json_str = request.body
+    print(json_str)
+    # json_obj = json.loads(json_str)
+    # style = json_obj.get()

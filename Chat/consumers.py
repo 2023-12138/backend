@@ -34,7 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         tmp = json.loads(text_data)
         text_data_json = tmp["data"]
         msgType = tmp["type"]
-        if msgType == "chat": #是聊天消息
+        if msgType == "chat" or msgType == "chat_pic": #是聊天消息
             message = text_data_json["message"]
             # 需要信息{"uid","tid","teamname"}
             to_uid = text_data_json.get('to_uid')  # 私聊对象id
@@ -57,12 +57,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 if toUserSocket != None:  # 成员在线
                     await toUserSocket.send(text_data=json.dumps(
                         {
-                         "type": "chat",
+                         "type": msgType,
                          "data": data }))
 
                 await self.send(text_data=json.dumps(
                     {
-                     "type": "chat",
+                     "type": msgType,
                      "data": data}))  # 在自己窗口展示
             if to_uid == "":  # 群聊
                 userlist = await self.get_userlist(tid)  # 团队成员列表
@@ -98,7 +98,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                     if user.uid != i:
                                         await toUserSocket.send(text_data=json.dumps(
                                             {
-                                             "type": "chat",
+                                             "type": msgType,
                                              "data":data}))
                                     if user.uid == i:
                                         await toUserSocket.send(text_data=json.dumps(
@@ -114,8 +114,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         if toUserSocket != None:  # 成员在线
                             await toUserSocket.send(text_data=json.dumps(
                                 {
-                                 "type": "chat",
+                                 "type": msgType,
                                  "data":data}))
+
+
 
     @database_sync_to_async
     def get_cid(self, from_uid, to_uid):
