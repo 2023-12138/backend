@@ -2,6 +2,7 @@ from django.shortcuts import render
 from Tools.LoginCheck import loginCheck
 from File.models import *
 from django.db.models import Q
+from django.forms.models import model_to_dict
 import json
 @loginCheck
 def createdir(request):
@@ -17,3 +18,13 @@ def createdir(request):
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
 
+@loginCheck
+def getFiles(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get('pid')
+    fileList = File.objects.filter(pid=pid)
+    filelist = []
+    for obj in fileList:
+        filelist.append(model_to_dict(obj))
+    return JsonResponse({'code': 200, 'message': '文件夹获取成功', 'data': {"filelist": filelist}})
