@@ -165,7 +165,7 @@ def copyProject(request):
     pid = json_obj.get('pid')
     try:
         project = Project.objects.filter(Q(pid=pid)).first()
-        new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
+        new_project = Project(project_name=project.project_name+"-副本", project_inform=project.project_inform,
                               tid=project.tid, uid=user.uid)
         new_project.groupid = createGroup(new_project.tid)
         new_project.save()  # 保存项目
@@ -178,12 +178,35 @@ def copyProject(request):
             for protoinfo in protoinfo_list:
                 new_protoinfo = Protoinfo(proto_info_id=new_prototype.protoid, info=protoinfo.info)
                 new_protoinfo.save()  # 保存原型
-        doc_list = Doc.objects.filter(Q(pid=pid))
-        for doc in doc_list:
-            new_padid = myPad.createGroupPad(new_project.groupid, doc.docname).get('padID')
-            new_doc = Doc(pid=new_pid, docname=doc.docname, padid=new_padid)
-            myPad.copyPad(doc.padid, new_padid, True)
-            new_doc.save()  # 保存文档
+
+        root_file = File.objects.filter(Q(pid=pid) & Q(depth=0)).first()
+        firstdep_file = File.objects.filter(Q(pid=pid) & Q(depth=1))
+        seconddep_file = File.objects.filter(Q(pid=pid) & Q(depth=2))
+        new_root = File(filename=root_file.filename+"-副本", pid=new_pid, father=-1, depth=0, type=0)
+        new_root.save()
+        for first_file in firstdep_file:
+            new_first = File(filename=first_file.filename, pid=new_pid, father=new_root.fileID, depth=1, type=first_file.type)
+            new_first.save()
+            if first_file.type == 1:
+                doc1 = Doc.objects.filter(Q(docId=first_file.docID)).first()
+                new_padid1 = myPad.createGroupPad(new_project.groupid, doc1.docname).get('padID')
+                new_doc = Doc(pid=new_pid, docname=doc1.docname, padid=new_padid1)
+                myPad.copyPad(doc1.padid, new_padid1, True)
+                new_doc.save()
+                new_first.docID = new_doc.docId
+                new_first.save()
+            else:
+                for second_file in seconddep_file:
+                    if second_file.father == first_file.fileID:
+                        new_second = File(filename=second_file.filename, pid=new_pid, father=new_first.fileID, depth=2, type=1)
+                        new_second.save()
+                        doc2 = Doc.objects.filter(Q(docId=second_file.docID)).first()
+                        new_padid2 = myPad.createGroupPad(new_project.groupid, doc2.docname).get('padID')
+                        new_doc = Doc(pid=new_pid, docname=doc2.docname, padid=new_padid2)
+                        myPad.copyPad(doc2.padid, new_padid2, True)
+                        new_doc.save()
+                        new_second.docID = new_doc.docId
+                        new_second.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目复制成功', 'data': {}})
