@@ -104,13 +104,13 @@ def openDoc(request):
     docid=json_obj.get('docid')
     doc=Doc.objects.get(docid=docid)
     pid=doc.pid
-    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
+    if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
     groupid = project.groupid
     sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid))
-    return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+doc.padid,'session':sessionid}})
+    return JsonResponse({'code': 200, 'message': '文档打开成功', 'data': {'url':'http://43.138.59.36:10010/p/'+doc.padid,'session':sessionid}})
 
 @loginCheck
 def delDoc(request):  # 删除文档
