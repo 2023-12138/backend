@@ -243,7 +243,7 @@ def createProto(request):
         return JsonResponse({'code': 200, 'message': '创建失败', 'data': {}})
     try:
         proto_info_id = prototype.protoid
-        protoinfo = Protoinfo.objects.get(proto_info_id=proto_info_id)
+        protoinfo = Protoinfo(proto_info_id=proto_info_id)
         protoinfo.save()
         return JsonResponse({'code': 400, 'message': '创建成功', 'data': {}})
     except Exception as e:
