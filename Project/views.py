@@ -278,6 +278,23 @@ def getProtoInfo(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     protoid = json_obj.get("protoid")
+    user = request.myUser
+    name = User.objects.get(uid=user.uid).name+"正在使用"
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
     data = protoinfo.info
-    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
+    if protoinfo.use:
+        return JsonResponse({'code': 400, 'message': name, 'data': {}})
+    else:
+        protoinfo.use = True
+        protoinfo.save()
+        return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
+
+@loginCheck
+def exitProto(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    protoid = json_obj.get("protoid")
+    protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
+    protoinfo.use = False
+    protoinfo.save()
+    return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
