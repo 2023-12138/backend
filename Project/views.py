@@ -43,13 +43,13 @@ def deleteProject(request):
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')  # 项目id
     tid = json_obj.get('tid')  # 所属团队
-    if Project.objects.filter(Q(pid=pid) & Q(tid=tid) & Q(is_active=True)).exists():
-        data = Project.objects.get(Q(pid=pid) & Q(tid=tid))
-    else:
-        JsonResponse({'code': 400, 'message': '没有符合条件的项目', 'data': {}})
     try:
-        data.is_active = 0
-        data.save()
+        if Project.objects.filter(Q(pid=pid) & Q(tid=tid) & Q(is_active=True)).exists():
+            data = Project.objects.get(Q(pid=pid) & Q(tid=tid))
+            data.is_active = 0
+            data.save()
+        else:
+            JsonResponse({'code': 400, 'message': '没有符合条件的项目', 'data': {}})
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目删除成功', 'data': {}})
@@ -62,13 +62,13 @@ def recoverProject(request):
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')  # 项目id
     tid = json_obj.get('tid')  # 所属团队
-    if Project.objects.filter(Q(pid=pid) & Q(tid=tid) & Q(is_active=False)).exists():
-        data = Project.objects.get(Q(pid=pid) & Q(tid=tid) & Q(is_active=False))
-    else:
-        JsonResponse({'code': 400, 'message': '没有符合条件的项目', 'data': {}})
     try:
-        data.is_active = 1
-        data.save()
+        if Project.objects.filter(Q(pid=pid) & Q(tid=tid) & Q(is_active=False)).exists():
+            data = Project.objects.get(Q(pid=pid) & Q(tid=tid) & Q(is_active=False))
+            data.is_active = 1
+            data.save()
+        else:
+            JsonResponse({'code': 400, 'message': '没有符合条件的项目', 'data': {}})
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目恢复成功', 'data': {}})
@@ -132,6 +132,24 @@ def viewProject(request):
     json_obj = json.loads(json_str)
     tid = json_obj.get('tid')
     projectlist = Project.objects.filter(Q(tid=tid) & Q(is_active=True))
+    projects = []
+    for project in projectlist:
+        data = {}
+        user = User.objects.filter(Q(uid=project.uid) & Q(is_active=True)).first()
+        username = user.name
+        data = model_to_dict(project)
+        data['create_time'] = project.create_time
+        data['username'] = username
+        projects.append(data)
+    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
+
+@loginCheck
+def viewDelProject(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    tid = json_obj.get('tid')
+    projectlist = Project.objects.filter(Q(tid=tid) & Q(is_active=False))
     projects = []
     for project in projectlist:
         data = {}
