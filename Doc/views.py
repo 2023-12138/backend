@@ -209,9 +209,12 @@ async def docAite(request):
     notice = Notice(uid=aite, rid=-1, docId=doc.docId, type="doc")
     await  notice_save(notice)
     if userSocket != None:
-        await userSocket.send(text_data=json.dumps(
-            {"message": "", "senderId": "", "receiverId": "", "teamId": "", "time": "",
-             "type": "doc_aite", "rid": ""}))
+        data = {  "message": "", "senderId": "", "receiverId": "", "teamId": "", "time": ""
+             , "rid": ""}
+        await userSocket.send(text_data=json.dumps({
+            "type":"doc_aite",
+            "data": data}
+            ))
 
     return JsonResponse({'code': 200, 'message': "文档@发送成功", "data": {}})
 
