@@ -20,7 +20,7 @@ from Project.models import *
 from File.models import *
 from py_etherpad import EtherpadLiteClient
 
-myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628c4b24a9150a1',
+myPad = EtherpadLiteClient('4c87155dea77eb7c2927025bc807ee87304e5bf06239ba1439c17c1efa2e6c4e',
                            'http://43.138.59.36:10010/api')
 
 
@@ -218,19 +218,17 @@ def saveDoc(request):  # 保存文档
 async def docAite(request):
     json_str = request.body
     json_obj = json.loads(json_str)
-    aite = json_obj.get('aite')  # 被@的成员uid
-    # docname = json_obj.get('docname')
-    # pid = json_obj.get("pid")
-    docid = json_obj.get("docid")
-    doc = await get_doc(docid)
-    userSocket = userSocketDict.get(aite)
-    notice = Notice(uid=aite, rid=-1, docId=doc.docId, type="doc")
+    username = json_obj.get('username')  # 被@的成员username
+    user=await get_user(username)
+    padid = json_obj.get("padid")
+    doc = await get_doc(padid)
+    userSocket = userSocketDict.get(user.uid)
+    notice = Notice(uid=user.uid, rid=-1, docId=doc.docId, type="doc")
     await  notice_save(notice)
     if userSocket != None:
         await userSocket.send(text_data=json.dumps(
             {"message": "", "senderId": "", "receiverId": "", "teamId": "", "time": "",
              "type": "doc_aite", "rid": ""}))
-
     return JsonResponse({'code': 200, 'message': "文档@发送成功", "data": {}})
 
 
@@ -261,10 +259,13 @@ def makeLink(request):  # 生成链接
 
 
 @database_sync_to_async
-def get_doc(docid):
-    return Doc.objects.get(docId=docid)
+def get_doc(padid):
+    return Doc.objects.get(padid=padid)
 
 
 @database_sync_to_async
 def notice_save(notice):
     notice.save()
+@database_sync_to_async
+def get_user(username):
+    return User.objects.get(username=username)

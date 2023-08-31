@@ -1,7 +1,7 @@
 from py_etherpad import EtherpadLiteClient
 import datetime
 import time
-myPad = EtherpadLiteClient('08ed388c84d03eebf6745356d5e61534843cbf75fb48ef5e8628c4b24a9150a1','http://43.138.59.36:10010/api')
+myPad = EtherpadLiteClient('4c87155dea77eb7c2927025bc807ee87304e5bf06239ba1439c17c1efa2e6c4e','http://43.138.59.36:10010/api')
 groupid=myPad.createGroup().get('groupID')
 # authorid=myPad.createAuthor("hhhh").get('authorID')
 print(groupid)
