@@ -99,14 +99,15 @@ def openDoc(request):
     json_obj = json.loads(json_str)
     #docname = json_obj.get('docname')
     docid=json_obj.get('docid')
-    pid = json_obj.get('pid')
+    doc=Doc.objects.get(docid=docid)
+    pid=doc.pid
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
-    doc=Doc.objects.get(Q(docid=docid)&Q(is_active=True))
     groupid = project.groupid
     sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid))
+    return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+doc.padid,'session':sessionid}})
 
 @loginCheck
 def delDoc(request):  # 删除文档
@@ -224,7 +225,6 @@ def makeLink(request):  # 生成链接
         user.save()
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
-    # link = "http://127.0.0.1:8000?token=" + str(token) + "&docId=" + str(docId)
     authorid=createAuthor(user.uid)
     doc=Doc.objects.get(Q(docid=docid)&Q(is_active=True))
     padid=doc.padid
