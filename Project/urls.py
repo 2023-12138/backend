@@ -16,4 +16,5 @@ urlpatterns = [
     path('searchProject',views.searchProject),#搜索项目
     path('copyProject', views.copyProject),  # 复制项目
     path('exitProto',views.exitProto), #退出原型
+    path('applyexit',views.applyEdit) ,#申请编辑
 ]

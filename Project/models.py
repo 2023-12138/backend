@@ -17,5 +17,5 @@ class Prototype(models.Model):
 
 class Protoinfo(models.Model):
     proto_info_id = models.IntegerField("proto_info_id",primary_key=True)
-    info = models.JSONField("info")  # 保存style和data信息
-    use = models.BooleanField("use", default=False)  # 该原型是否有人使用
+    info = models.JSONField("info",null=True)  # 保存style和data信息
+    useid = models.IntegerField("useid", default=-1)  #正在使用的人的id

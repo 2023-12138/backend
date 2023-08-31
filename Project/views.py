@@ -238,15 +238,22 @@ def createProto(request):
     prototype = Prototype(pid=pid,protoname=protoname)
     try:
         prototype.save()
-        return JsonResponse({'code': 400, 'message': '创建成功', 'data': {}})
     except Exception as e:
         print(e.args[0])
+        return JsonResponse({'code': 200, 'message': '创建失败', 'data': {}})
+    try:
+        proto_info_id = prototype.protoid
+        protoinfo = Protoinfo.objects.get(proto_info_id=proto_info_id)
+        protoinfo.save()
+        return JsonResponse({'code': 400, 'message': '创建成功', 'data': {}})
+    except Exception as e:
         return JsonResponse({'code': 200, 'message': '创建失败', 'data': {}})
 
 @loginCheck
 def saveInfo(request):
     json_str = request.body
     json_obj = json.loads(json_str)
+    user = request.myUser
     protoid = json_obj.get("protoid")
     style  = json_obj.get("style")
     data = json_obj.get("data")
@@ -256,6 +263,8 @@ def saveInfo(request):
         protoinfo.info = info
     else:
         protoinfo = Protoinfo(proto_info_id=protoid,info=info)
+    if protoinfo.useid != user.uid:
+        return JsonResponse({'code': 400, 'message': '您无法保存，请申请编辑', 'data': {}})
     try:
         protoinfo.save()
         return JsonResponse({'code': 200, 'message': '保存成功', 'data': {}})
@@ -273,21 +282,30 @@ def getProto(request):
         protolist.append({"protoid":obj.protoid,"protoname":obj.protoname})
     return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"protolist":protolist}})
 
+
+@loginCheck
+def applyEdit(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    protoid = json_obj.get("protoid")
+    applyid = json_obj.get("applyid")
+    protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
+    if protoinfo.useid == -1:
+        protoinfo.useid = applyid
+        protoinfo.save()
+        return JsonResponse({'code': 200, 'message': '申请成功', 'data': {}})
+    else:
+        return JsonResponse({'code': 400, 'message': '有人正在编辑,您无法保存', 'data': {}})
+
+
 @loginCheck
 def getProtoInfo(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     protoid = json_obj.get("protoid")
-    user = request.myUser
-    name = User.objects.get(uid=user.uid).name+"正在使用"
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
     data = protoinfo.info
-    if protoinfo.use:
-        return JsonResponse({'code': 400, 'message': name, 'data': {}})
-    else:
-        protoinfo.use = True
-        protoinfo.save()
-        return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
+    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
 
 @loginCheck
 def exitProto(request):
@@ -295,6 +313,6 @@ def exitProto(request):
     json_obj = json.loads(json_str)
     protoid = json_obj.get("protoid")
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
-    protoinfo.use = False
+    protoinfo.useid = -1
     protoinfo.save()
     return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
