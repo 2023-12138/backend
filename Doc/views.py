@@ -51,6 +51,7 @@ def createSession(groupid, authorid):
         data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库操作失败', 'data': {}})
+    return sessionid
 
 
 def deleteSession(sessionid):
@@ -217,15 +218,27 @@ def makeLink(request):  # 生成链接
     json_str = request.body
     json_obj = json.loads(json_str)
     identity = json_obj.get("identity")
-    docId = json_obj.get("docId")  # 文档编号
+    docid = json_obj.get("docid")  # 文档编号
     user = User(username="xxx", password="xxx", name="xxx", identity=identity)
     try:
         user.save()
-        token = make_token(user.uid)
-        link = "http://127.0.0.1:8000?token=" + str(token) + "&docId=" + str(docId)
-        return JsonResponse({'code': 200, 'message': '链接生成成功', 'data': {'link': link}})
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+    # link = "http://127.0.0.1:8000?token=" + str(token) + "&docId=" + str(docId)
+    authorid=createAuthor(user.uid)
+    doc=Doc.objects.get(Q(docid=docid)&Q(is_active=True))
+    padid=doc.padid
+    pid=doc.pid
+    project=Project.objects.get(Q(pid=pid)&Q(is_active=True))
+    groupid=project.groupid
+    sessionid=createSession(groupid,authorid)
+    if identity=='1':#代表仅查看游客
+        padid=myPad.getReadOnlyID(padid).get('readOnlyID')
+    link = "http://43.138.59.36:10010/p/&padID=" + padid + "&sessionID=" + sessionid
+    return JsonResponse({'code':200,'message':'生成链接成功','data':{'url':link}})
+
+
+
 
 
 @database_sync_to_async
