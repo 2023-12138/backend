@@ -144,6 +144,24 @@ def viewProject(request):
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
 
 @loginCheck
+def viewDelProject(request):
+    user = request.myUser
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    tid = json_obj.get('tid')
+    projectlist = Project.objects.filter(Q(tid=tid) & Q(is_active=False))
+    projects = []
+    for project in projectlist:
+        data = {}
+        user = User.objects.filter(Q(uid=project.uid) & Q(is_active=True)).first()
+        username = user.name
+        data = model_to_dict(project)
+        data['create_time'] = project.create_time
+        data['username'] = username
+        projects.append(data)
+    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
+
+@loginCheck
 def searchProject(request):
     user = request.myUser
     json_str = request.body

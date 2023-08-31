@@ -7,6 +7,7 @@ urlpatterns = [
     path('renameProject',views.renameProject),#重命名项目
     path('renameProjectInform',views.renameProjectInform),#重命名项目描述
     path('viewProject',views.viewProject),#查看团队下属项目
+    path('viewDelProject', views.viewDelProject),  # 查看回收站项目
     path('getProject',views.getProject),#获取某个项目信息
     path('createProto',views.createProto),#创建项目原型
     path('getProto',views.getProto) ,#获取项目下的原型
