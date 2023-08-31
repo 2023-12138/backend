@@ -91,9 +91,9 @@ def viewTeam(request):  # 用户查看当前所属团队
     for data in teamidlist:
         team = Team.objects.get(tid=data.tid)
         tmp = model_to_dict(team)
-        if User_team.objects.filter(Q(tid=data.tid) & Q(status="0")).exists():
+        if User_team.objects.filter(Q(tid=data.tid) & Q(status="0")&Q(is_active=True)).exists():
             creater = User_team.objects.get(Q(tid=data.tid) & Q(status="0")).uid
-        elif User_team.objects.filter(Q(tid=data.tid) & Q(status="3")).exists():
+        elif User_team.objects.filter(Q(tid=data.tid) & Q(status="3")&Q(is_active=True)).exists():
             creater = User_team.objects.get(Q(tid=data.tid) & Q(status="3")).uid
         tmp['creater'] = creater
         teamlist.append(tmp)
@@ -109,7 +109,7 @@ def deleteUser(request):  # 删除用户
     json_obj = json.loads(json_str)
     tid = json_obj.get('tid')
     uid = json_obj.get('uid')
-    data = User_team.objects.get(Q(uid=user.uid) & Q(tid=tid))
+    data = User_team.objects.get(Q(uid=user.uid) & Q(tid=tid)&Q(is_active=True))
     if data.status == '2':  # 判断用户是否有权限删除
         return JsonResponse({'code': 400, 'message': '用户没有权限删除成员', 'data': {}})
     data2 = User_team.objects.get(Q(uid=uid) & Q(tid=tid))
@@ -187,7 +187,7 @@ def getUsers(request):  # 根据用户名筛选符合要求的用户
     json_str = request.body
     json_obj = json.loads(json_str)
     userName = json_obj.get('username')
-    result = User.objects.filter(username__contains=userName)
+    result = User.objects.filter(Q(username__contains=userName)&Q(is_active=True))
     data = []
     for obj in result:
         data.append({'username': obj.username, 'uid': obj.uid})

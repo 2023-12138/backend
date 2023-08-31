@@ -149,7 +149,7 @@ def searchProject(request):
     json_obj = json.loads(json_str)
     tid = json_obj.get('tid')
     key = json_obj.get('key')
-    project_list = Project.objects.filter(Q(tid=tid) & Q(project_name__icontains=key))
+    project_list = Project.objects.filter(Q(tid=tid) & Q(project_name__icontains=key)&Q(is_active=True))
     projects = []
     for project in project_list:
         data = {}
