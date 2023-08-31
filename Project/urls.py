@@ -15,4 +15,6 @@ urlpatterns = [
     path('getProtoInfo',views.getProtoInfo),#获取某个原型的信息
     path('searchProject',views.searchProject),#搜索项目
     path('copyProject', views.copyProject),  # 复制项目
+    path('exitProto',views.exitProto), #退出原型
+    path('applyedit',views.applyEdit) ,#申请编辑
 ]
