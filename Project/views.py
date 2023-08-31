@@ -287,8 +287,9 @@ def getProto(request):
 def applyEdit(request):
     json_str = request.body
     json_obj = json.loads(json_str)
+    user = request.myUser
     protoid = json_obj.get("protoid")
-    applyid = json_obj.get("applyid")
+    applyid = user.uid
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
     if protoinfo.useid == -1:
         protoinfo.useid = applyid
