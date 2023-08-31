@@ -25,4 +25,5 @@ urlpatterns = [
     path("notice/",include('Notice.urls')),
     path("project/",include('Project.urls')),
     path("doc/",include("Doc.urls")),
+    path("file/",include("File.urls")),
 ]
