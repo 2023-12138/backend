@@ -20,7 +20,7 @@ def createdir(request):
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
 
 @loginCheck
-def getFiles(request):
+def getallFiles(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     pid = json_obj.get('pid')
@@ -28,4 +28,25 @@ def getFiles(request):
     filelist = []
     for obj in fileList:
         filelist.append(model_to_dict(obj))
-    return JsonResponse({'code': 200, 'message': '文件夹获取成功', 'data': {"filelist": filelist}})
+    return JsonResponse({'code': 200, 'message': '所有文件获取成功', 'data': {"filelist": filelist}})
+
+@loginCheck
+def getProjectFiles(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    pid = json_obj.get('pid')
+    fileList = File.objects.filter(Q(pid=pid) & Q(depth=1))
+    filelist = []
+    for obj in fileList:
+        filelist.append(model_to_dict(obj))
+    return JsonResponse({'code': 200, 'message': '项目子文件获取成功', 'data': {"filelist": filelist}})
+@loginCheck
+def getFolderFiles(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    fileID = json_obj.get('fileID')
+    fileList = File.objects.filter(Q(father=fileID) & Q(depth=2))
+    filelist = []
+    for obj in fileList:
+        filelist.append(model_to_dict(obj))
+    return JsonResponse({'code': 200, 'message': '文件夹子文件获取成功', 'data': {"filelist": filelist}})
