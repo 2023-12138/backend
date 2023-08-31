@@ -67,6 +67,7 @@ def createDoc(request):  # 创建文档     #处理同名文件
     pid = json_obj.get('pid')
     depth = json_obj.get('depth')
     father = json_obj.get("father")
+    default=json_obj.get('default')
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:

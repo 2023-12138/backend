@@ -6,4 +6,5 @@ django-cors-headers = 4.2.0 <br/>
 pymysql = 1.1.0 <br/>
 daphne = 4.0.0 <br/>
 channels = 4.0.0 <br/>
-qiniu = 7.11.1
+qiniu = 7.11.1 <br/>
+pyetherpadlite = 1.1.1
