@@ -67,9 +67,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if to_uid == "":  # 群聊
                 userlist = await self.get_userlist(tid)  # 团队成员列表
                 cid = await self.get_cid2(tid)  # 聊天室id
-                new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid,tid=tid,type=msgType)
-                await self.record_save(new_record)
                 aite = text_data_json.get('aite')
+                ntype = "chat"
+                if aite!=None and len(aite)>0 :
+                    ntype = "chat_at"
+                new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid, tid=tid, type=ntype)
+                await self.record_save(new_record)
                 # await self.group_chat(aite, message, new_record, nowTime, tid, userlist)
                 if aite!=None and len(aite) >0:
                     for i in aite:
