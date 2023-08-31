@@ -70,7 +70,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 aite = text_data_json.get('aite')
                 ntype = "chat"
                 if aite!=None and len(aite)>0 :
-                    ntype = "chat_aite"
+                    ntype = "chat_aite_history"
                 new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid, tid=tid, type=ntype)
                 await self.record_save(new_record)
                 # await self.group_chat(aite, message, new_record, nowTime, tid, userlist)
