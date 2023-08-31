@@ -1,6 +1,8 @@
 import datetime
 import json
 import time
+
+import Doc.views
 from Tools.LoginCheck import loginCheck, asyncLoginCheck
 from asgiref.sync import sync_to_async, async_to_sync
 from channels.db import database_sync_to_async
@@ -126,7 +128,23 @@ def delDoc(request):  # 删除文档
         except Exception as e:
             return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
-
+def getAuthor(request):
+    json_str = request.body
+    json_obj = json.loads(json_str)
+    padid=json_obj.get('padid')
+    userlist=[]
+    doc=Doc.objects.get(padid=padid)
+    pid=doc.pid
+    project=Project.objects.get(Q(pid=pid)&Q(is_active=True))
+    tid=project.tid
+    userlists=User_team.objects.filter(Q(tid=tid)&Q(is_active=True))
+    for i in userlists:
+        user=User.objects.get(uid=i.uid)
+        userdata={}
+        userdata['uid']=user.uid
+        userdata['username']=user.username
+        userlist.append(userdata)
+    return JsonResponse({'code':200,'message':'查询用户成功','data':{'userlist':userlist}})
 # @loginCheck
 # def saveDoc(request):
 #     json_str = request.body
