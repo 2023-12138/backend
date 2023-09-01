@@ -19,3 +19,7 @@ class Protoinfo(models.Model):
     proto_info_id = models.IntegerField("proto_info_id",primary_key=True)
     info = models.JSONField("info",null=True)  # 保存style和data信息
     useid = models.IntegerField("useid", default=-1)  #正在使用的人的id
+
+class Protomodel(models.Model):
+    modelid = models.AutoField("modelid",primary_key = True) #模型id
+    modelinfo = models.JSONField("modelinfo",null=True)  # 保存style和data信息
