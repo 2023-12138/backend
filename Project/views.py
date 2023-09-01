@@ -6,8 +6,10 @@ from Project.models import *
 from User.models import User
 from django.forms.models import model_to_dict
 from Doc.views import *
-from File.models import *
+from File.models import  *
+from Tools.MakeToken import make_token
 
+base = 0
 
 @loginCheck
 def createProject(request):
@@ -322,8 +324,21 @@ def getProtoInfo(request):
 def exitProto(request):
     json_str = request.body
     json_obj = json.loads(json_str)
+    user = request.myUser
     protoid = json_obj.get("protoid")
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
-    protoinfo.useid = -1
-    protoinfo.save()
-    return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
+    if protoinfo.useid ==user.uid:
+        protoinfo.useid = -1
+        protoinfo.save()
+        return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
+    else:
+        return JsonResponse({'code': 400, 'message': '请先申请编辑', 'data': {}})
+
+@loginCheck
+def makeLink(request):
+    global  base
+    fakeuid = 1000000+base
+    base +=1
+    token = make_token(fakeuid)
+    return JsonResponse({'code': 200, 'message': '连接生成成功', 'data': {'token':token}})
+
