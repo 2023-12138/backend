@@ -94,7 +94,7 @@ def createDoc(request):  # 创建文档     #处理同名文件
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     groupid = project.groupid
     sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid)).sessionid
-    if template!="":
+    if template!="空白文档":
             myPad.copyPad(template,padid,True)
     return JsonResponse({'code': 200, 'message': '文档创建成功',
                          'data': {'url': 'http://43.138.59.36:10010/p/' + newDoc.padid, 'session': sessionid}})
