@@ -229,7 +229,7 @@ async def docAite(request):
     padid = json_obj.get("padid")
     doc = await get_doc(padid)
     pid=doc.pid
-    project=Project.objects.get(pid=pid)
+    project= await get_project(pid)
     userSocket = userSocketDict.get(user.uid)
     notice = Notice(uid=user.uid, rid=-1, docId=doc.docId, type="doc")
     await  notice_save(notice)
@@ -241,6 +241,10 @@ async def docAite(request):
         ))
 
     return JsonResponse({'code': 200, 'message': "文档@发送成功", "data": {}})
+
+@database_sync_to_async
+def get_project(pid):
+    return Project.objects.get(pid=pid)
 
 
 def makeLink(request):  # 生成链接
