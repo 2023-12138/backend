@@ -17,4 +17,5 @@ urlpatterns = [
     path('copyProject', views.copyProject),  # 复制项目
     path('exitProto',views.exitProto), #退出原型
     path('applyedit',views.applyEdit) ,#申请编辑
+    path('makelink',views.makeLink),#生成链接
 ]

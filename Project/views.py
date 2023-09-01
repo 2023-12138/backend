@@ -7,6 +7,9 @@ from User.models import User
 from django.forms.models import model_to_dict
 from Doc.views import *
 from File.models import  *
+from Tools.MakeToken import make_token
+
+base = 0
 
 @loginCheck
 def createProject(request):
@@ -317,3 +320,12 @@ def exitProto(request):
     protoinfo.useid = -1
     protoinfo.save()
     return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
+
+@loginCheck
+def makeLink(request):
+    global  base
+    fakeuid = 1000000+base
+    base +=1
+    token = make_token(fakeuid)
+    return JsonResponse({'code': 200, 'message': '连接生成成功', 'data': {'token':token}})
+

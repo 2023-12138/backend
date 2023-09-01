@@ -22,8 +22,9 @@ def loginCheck(func):
             return JsonResponse({'code': 400, 'message': "请重新登录", 'data': {}})
 
         uid = res['uid']
-        user  = User.objects.get(uid=uid)
-        request.myUser = user
+        if uid < 1000000:
+            user  = User.objects.get(uid=uid)
+            request.myUser = user
         return func(request,*args,**kwargs)
     return wrap
 
