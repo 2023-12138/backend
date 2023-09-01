@@ -115,7 +115,7 @@ def openDoc(request):
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
     groupid = project.groupid
     sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid)).sessionid
-    return JsonResponse({'code': 200, 'message': '文档打开成功', 'data': {'padid': doc.padid, 'sessionid': sessionid}})
+    return JsonResponse({'code': 200, 'message': '文档打开成功', 'data': {'groupid': groupid, 'sessionid': sessionid,'padname':doc.docname}})
 
 
 @loginCheck

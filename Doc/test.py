@@ -88,4 +88,5 @@ myPad = EtherpadLiteClient('4c87155dea77eb7c2927025bc807ee87304e5bf06239ba1439c1
 # myPad.deletePad("项目管理")
 # myPad.deletePad("架构设计说明书")
 # myPad.deletePad("工作周报")
-myPad.copyPad("项目计划书","123",True)
+template='会议纪要'
+myPad.copyPad(template,"123",True)
