@@ -89,7 +89,7 @@ def haveRead(request):  # 某条消息已读
     json_obj = json.loads(json_str)
     user = request.myUser
     rid = json_obj.get("rid")
-    notice = Notice.objects.get(Q(rid=rid) & Q(uid=user.uid))
-    notice.read = 1  # 已读
+    notice = Notice.objects.get(rid=rid)
+    读notice.read = 1  # 已读
     notice.save()
     return JsonResponse({'code': 200, 'message': "消息已读", "data": {}})
