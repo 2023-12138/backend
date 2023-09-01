@@ -90,6 +90,6 @@ def haveRead(request):  # 某条消息已读
     user = request.myUser
     rid = json_obj.get("rid")
     notice = Notice.objects.get(rid=rid)
-    读notice.read = 1  # 已读
+    notice.read = 1  # 已读
     notice.save()
     return JsonResponse({'code': 200, 'message': "消息已读", "data": {}})
