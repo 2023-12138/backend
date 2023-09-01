@@ -58,7 +58,7 @@ async def getHistory(request):
                 "data": data
             }))
     elif senderId != "":  # 私聊消息记录
-        senderName = User.objects.get(uid=senderId)
+        senderName = await  get_sendername(senderId)
         chatRoom1 = await get_chatroom(uid, senderId)
         chatRoom2 = await get_chatroom(senderId, uid)
         cid = -1
