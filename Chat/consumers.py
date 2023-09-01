@@ -71,7 +71,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 userlist = await self.get_userlist(tid)  # 团队成员列表
                 cid = await self.get_cid2(tid)  # 聊天室id
                 aite = text_data_json.get('aite')
-                ntype = "chat"
+                ntype = msgType
                 if aite != None and len(aite) > 0:
                     ntype = "chat_aite_history"
                 new_record = Record(cid=cid, time=nowTime, content=message, sender=from_uid, tid=tid, type=ntype)
