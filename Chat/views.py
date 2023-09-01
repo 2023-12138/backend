@@ -24,8 +24,8 @@ def room(request, room_name):
 def saveFile(request):
     key = request.POST.get("key")
     file = request.FILES.get("file")
-    nowTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
-    filename = key + "_" + "".join(nowTime.split())
+    nowTime = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")  # 当前时间
+    filename ="".join(nowTime.split())+"_"+key
     print(key)
     code = uploadFile(filename, file)
     if code == 400:
