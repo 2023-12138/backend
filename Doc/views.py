@@ -104,7 +104,7 @@ def openDoc(request):
     json_obj = json.loads(json_str)
     # docname = json_obj.get('docname')
     docid = json_obj.get('docid')
-    doc = Doc.objects.get(docid=docid)
+    doc = Doc.objects.get(docId=docid)
     pid = doc.pid
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
@@ -120,10 +120,10 @@ def delDoc(request):  # 删除文档
     json_str = request.body
     json_obj = json.loads(json_str)
     docid = json_obj.get("docid")
-    if not Doc.objects.filter(Q(docid=docid) & Q(is_active=True)).exists():
+    if not Doc.objects.filter(Q(docId=docid) & Q(is_active=True)).exists():
         return JsonResponse({'code': 400, 'message': '该文档不存在', 'data': {}})
     else:
-        doc = Doc.objects.get(docid=docid)
+        doc = Doc.objects.get(docId=docid)
         doc.is_active = False
         try:
             doc.save()
@@ -252,7 +252,7 @@ def makeLink(request):  # 生成链接
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
     authorid = createAuthor(user.uid)
-    doc = Doc.objects.get(Q(docid=docid) & Q(is_active=True))
+    doc = Doc.objects.get(Q(docId=docid) & Q(is_active=True))
     padid = doc.padid
     pid = doc.pid
     project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
