@@ -62,12 +62,30 @@ def userRegister(request):
         private_data.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    authorid=createAuthor(newUser.uid)
-    newUser.authorid=authorid
+    authorid = createAuthor(newUser.uid)
+    newUser.authorid = authorid
     try:
         newUser.save()
     except Exception as e:
         return JsonResponse({'code': 500, 'message': "数据库保存失败", 'data': {}})
+    tid = private_team.tid
+    new_project = Project(project_name=newUser.username + "'s default project",
+                          project_inform="This is " + newUser.username + "'s default project", tid=tid, uid=newUser.uid)
+    try:
+        new_project.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    groupid = createGroup(tid)
+    new_project.groupid = groupid
+    try:
+        new_project.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
+    newFile = File(filename=new_project.project_name, pid=new_project.pid, father=-1, depth=0, type=0)
+    try:
+        newFile.save()
+    except:
+        return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': "注册成功", 'data': {}})
 
 
@@ -83,11 +101,11 @@ def userLogin(request):
         user = User.objects.get(username=username)
     if user.password == password:  # 判断请求的密码是否与数据库存储的密码相同
         token = make_token(user.uid)  # 成功登录生成token并以字符串的形式返回
-        privateTid=User_team.objects.get(Q(uid=user.uid)&Q(status=3)).tid
+        privateTid = User_team.objects.get(Q(uid=user.uid) & Q(status=3)).tid
         return JsonResponse({'code': 200, 'message': "登录成功", 'data': {
             'token': token,
             'uid': user.uid,
-            "privateTid":privateTid
+            "privateTid": privateTid
         }})
     # 重定向回先前页面
     else:

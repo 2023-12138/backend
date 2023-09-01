@@ -62,19 +62,19 @@ def deleteSession(sessionid):
 
 @loginCheck
 def createDoc(request):  # 创建文档     #处理同名文件
-    user=request.myUser
+    user = request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
     docname = json_obj.get('docname')
     pid = json_obj.get('pid')
     depth = json_obj.get('depth')
     father = json_obj.get("father")
-    default=json_obj.get('default')
+    default = json_obj.get('default')
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)):
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
-    if File.objects.filter(Q(pid=pid)&Q(father=father)&Q(filename=docname)):
+    if File.objects.filter(Q(pid=pid) & Q(father=father) & Q(filename=docname)):
         return JsonResponse({'code': 400, 'message': '文件名重复', 'data': {}})
     groupid = project.groupid
     try:
@@ -86,31 +86,34 @@ def createDoc(request):  # 创建文档     #处理同名文件
         newDoc.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    newFile = File(filename=docname, pid=pid, father=father, depth=depth, type=1,docID=newDoc.docId)
+    newFile = File(filename=docname, pid=pid, father=father, depth=depth, type=1, docID=newDoc.docId)
     try:
         newFile.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    groupid=project.groupid
-    sessionid=Session.objects.get(Q(groupid=groupid)&Q(authorid=user.authorid)).sessionid
-    return JsonResponse({'code': 200, 'message': '文档创建成功', 'data': {'url':'http://43.138.59.36:10010/p/'+newDoc.padid,'session':sessionid}})
+    groupid = project.groupid
+    sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid)).sessionid
+    return JsonResponse({'code': 200, 'message': '文档创建成功',
+                         'data': {'url': 'http://43.138.59.36:10010/p/' + newDoc.padid, 'session': sessionid}})
+
 
 @loginCheck
 def openDoc(request):
-    user=request.myUser
+    user = request.myUser
     json_str = request.body
     json_obj = json.loads(json_str)
-    #docname = json_obj.get('docname')
-    docid=json_obj.get('docid')
-    doc=Doc.objects.get(docid=docid)
-    pid=doc.pid
+    # docname = json_obj.get('docname')
+    docid = json_obj.get('docid')
+    doc = Doc.objects.get(docid=docid)
+    pid = doc.pid
     if Project.objects.filter(Q(pid=pid) & Q(is_active=True)).exists():
         project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
     else:
         return JsonResponse({'code': 400, 'message': '该项目不存在', 'data': {}})
     groupid = project.groupid
     sessionid = Session.objects.get(Q(groupid=groupid) & Q(authorid=user.authorid))
-    return JsonResponse({'code': 200, 'message': '文档打开成功', 'data': {'padid':doc.padid,'sessionid':sessionid}})
+    return JsonResponse({'code': 200, 'message': '文档打开成功', 'data': {'padid': doc.padid, 'sessionid': sessionid}})
+
 
 @loginCheck
 def delDoc(request):  # 删除文档
@@ -128,23 +131,26 @@ def delDoc(request):  # 删除文档
         except Exception as e:
             return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
 
+
 def getAuthor(request):
     json_str = request.body
     json_obj = json.loads(json_str)
-    padid=json_obj.get('padid')
-    userlist=[]
-    doc=Doc.objects.get(padid=padid)
-    pid=doc.pid
-    project=Project.objects.get(Q(pid=pid)&Q(is_active=True))
-    tid=project.tid
-    userlists=User_team.objects.filter(Q(tid=tid)&Q(is_active=True))
+    padid = json_obj.get('padid')
+    userlist = []
+    doc = Doc.objects.get(padid=padid)
+    pid = doc.pid
+    project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    tid = project.tid
+    userlists = User_team.objects.filter(Q(tid=tid) & Q(is_active=True))
     for i in userlists:
-        user=User.objects.get(uid=i.uid)
-        userdata={}
-        userdata['uid']=user.uid
-        userdata['username']=user.username
+        user = User.objects.get(uid=i.uid)
+        userdata = {}
+        userdata['uid'] = user.uid
+        userdata['username'] = user.username
         userlist.append(userdata)
-    return JsonResponse({'code':200,'message':'查询用户成功','data':{'userlist':userlist}})
+    return JsonResponse({'code': 200, 'message': '查询用户成功', 'data': {'userlist': userlist}})
+
+
 # @loginCheck
 # def saveDoc(request):
 #     json_str = request.body
@@ -219,19 +225,19 @@ async def docAite(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     username = json_obj.get('username')  # 被@的成员username
-    user=await get_user(username)
+    user = await get_user(username)
     padid = json_obj.get("padid")
     doc = await get_doc(padid)
     userSocket = userSocketDict.get(user.uid)
     notice = Notice(uid=user.uid, rid=-1, docId=doc.docId, type="doc")
     await  notice_save(notice)
     if userSocket != None:
-        data = {  "message": "", "senderId": "", "receiverId": "", "teamId": "", "time": ""
-             , "rid": ""}
+        data = {"message": "", "senderId": "", "receiverId": "", "teamId": "", "time": ""
+            , "rid": ""}
         await userSocket.send(text_data=json.dumps({
-            "type":"doc_aite",
+            "type": "doc_aite",
             "data": data}
-            ))
+        ))
 
     return JsonResponse({'code': 200, 'message': "文档@发送成功", "data": {}})
 
@@ -246,20 +252,17 @@ def makeLink(request):  # 生成链接
         user.save()
     except Exception as e:
         return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
-    authorid=createAuthor(user.uid)
-    doc=Doc.objects.get(Q(docid=docid)&Q(is_active=True))
-    padid=doc.padid
-    pid=doc.pid
-    project=Project.objects.get(Q(pid=pid)&Q(is_active=True))
-    groupid=project.groupid
-    sessionid=createSession(groupid,authorid)
-    if identity=='1':#代表仅查看游客
-        padid=myPad.getReadOnlyID(padid).get('readOnlyID')
+    authorid = createAuthor(user.uid)
+    doc = Doc.objects.get(Q(docid=docid) & Q(is_active=True))
+    padid = doc.padid
+    pid = doc.pid
+    project = Project.objects.get(Q(pid=pid) & Q(is_active=True))
+    groupid = project.groupid
+    sessionid = createSession(groupid, authorid)
+    if identity == '1':  # 代表仅查看游客
+        padid = myPad.getReadOnlyID(padid).get('readOnlyID')
     link = "http://43.138.59.36:10010/p/&padID=" + padid + "&sessionID=" + sessionid
-    return JsonResponse({'code':200,'message':'生成链接成功','data':{'url':link}})
-
-
-
+    return JsonResponse({'code': 200, 'message': '生成链接成功', 'data': {'url': link}})
 
 
 @database_sync_to_async
@@ -270,6 +273,8 @@ def get_doc(padid):
 @database_sync_to_async
 def notice_save(notice):
     notice.save()
+
+
 @database_sync_to_async
 def get_user(username):
     return User.objects.get(username=username)

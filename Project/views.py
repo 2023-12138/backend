@@ -6,7 +6,8 @@ from Project.models import *
 from User.models import User
 from django.forms.models import model_to_dict
 from Doc.views import *
-from File.models import  *
+from File.models import *
+
 
 @loginCheck
 def createProject(request):
@@ -22,13 +23,13 @@ def createProject(request):
         new_project.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    groupid= createGroup(tid)
-    new_project.groupid=groupid
+    groupid = createGroup(tid)
+    new_project.groupid = groupid
     try:
         new_project.save()
     except:
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
-    newFile = File(filename=project_name, pid = new_project.pid,father=-1,depth=0,type=0)
+    newFile = File(filename=project_name, pid=new_project.pid, father=-1, depth=0, type=0)
     try:
         newFile.save()
     except:
@@ -143,6 +144,7 @@ def viewProject(request):
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
 
+
 @loginCheck
 def viewDelProject(request):
     user = request.myUser
@@ -161,6 +163,7 @@ def viewDelProject(request):
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
 
+
 @loginCheck
 def searchProject(request):
     user = request.myUser
@@ -168,13 +171,14 @@ def searchProject(request):
     json_obj = json.loads(json_str)
     tid = json_obj.get('tid')
     key = json_obj.get('key')
-    project_list = Project.objects.filter(Q(tid=tid) & Q(project_name__icontains=key)&Q(is_active=True))
+    project_list = Project.objects.filter(Q(tid=tid) & Q(project_name__icontains=key) & Q(is_active=True))
     projects = []
     for project in project_list:
         data = {}
         data = model_to_dict(project)
         projects.append(data)
     return JsonResponse({'code': 200, 'message': '搜索成功', 'data': {'project_list': projects}})
+
 
 @loginCheck
 def copyProject(request):
@@ -184,7 +188,7 @@ def copyProject(request):
     pid = json_obj.get('pid')
     try:
         project = Project.objects.filter(Q(pid=pid)).first()
-        new_project = Project(project_name=project.project_name+"-副本", project_inform=project.project_inform,
+        new_project = Project(project_name=project.project_name + "-副本", project_inform=project.project_inform,
                               tid=project.tid, uid=user.uid)
         new_project.groupid = createGroup(new_project.tid)
         new_project.save()  # 保存项目
@@ -201,10 +205,11 @@ def copyProject(request):
         root_file = File.objects.filter(Q(pid=pid) & Q(depth=0)).first()
         firstdep_file = File.objects.filter(Q(pid=pid) & Q(depth=1))
         seconddep_file = File.objects.filter(Q(pid=pid) & Q(depth=2))
-        new_root = File(filename=root_file.filename+"-副本", pid=new_pid, father=-1, depth=0, type=0)
+        new_root = File(filename=root_file.filename + "-副本", pid=new_pid, father=-1, depth=0, type=0)
         new_root.save()
         for first_file in firstdep_file:
-            new_first = File(filename=first_file.filename, pid=new_pid, father=new_root.fileID, depth=1, type=first_file.type)
+            new_first = File(filename=first_file.filename, pid=new_pid, father=new_root.fileID, depth=1,
+                             type=first_file.type)
             new_first.save()
             if first_file.type == 1:
                 doc1 = Doc.objects.filter(Q(docId=first_file.docID)).first()
@@ -217,7 +222,8 @@ def copyProject(request):
             else:
                 for second_file in seconddep_file:
                     if second_file.father == first_file.fileID:
-                        new_second = File(filename=second_file.filename, pid=new_pid, father=new_first.fileID, depth=2, type=1)
+                        new_second = File(filename=second_file.filename, pid=new_pid, father=new_first.fileID, depth=2,
+                                          type=1)
                         new_second.save()
                         doc2 = Doc.objects.filter(Q(docId=second_file.docID)).first()
                         new_padid2 = myPad.createGroupPad(new_project.groupid, doc2.docname).get('padID')
@@ -230,12 +236,13 @@ def copyProject(request):
         return JsonResponse({'code': 400, 'message': '数据库保存失败', 'data': {}})
     return JsonResponse({'code': 200, 'message': '项目复制成功', 'data': {}})
 
+
 def createProto(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     pid = json_obj.get("pid")
     protoname = json_obj.get("protoname")
-    prototype = Prototype(pid=pid,protoname=protoname)
+    prototype = Prototype(pid=pid, protoname=protoname)
     try:
         prototype.save()
     except Exception as e:
@@ -249,20 +256,21 @@ def createProto(request):
     except Exception as e:
         return JsonResponse({'code': 200, 'message': '创建失败', 'data': {}})
 
+
 @loginCheck
 def saveInfo(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     user = request.myUser
     protoid = json_obj.get("protoid")
-    style  = json_obj.get("style")
+    style = json_obj.get("style")
     data = json_obj.get("data")
-    info = {"style":style,"data":data}
-    if Protoinfo.objects.filter(proto_info_id = protoid).exists():
+    info = {"style": style, "data": data}
+    if Protoinfo.objects.filter(proto_info_id=protoid).exists():
         protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
         protoinfo.info = info
     else:
-        protoinfo = Protoinfo(proto_info_id=protoid,info=info)
+        protoinfo = Protoinfo(proto_info_id=protoid, info=info)
     if protoinfo.useid != user.uid:
         return JsonResponse({'code': 400, 'message': '您无法保存，请申请编辑', 'data': {}})
     try:
@@ -271,16 +279,17 @@ def saveInfo(request):
     except Exception as e:
         return JsonResponse({'code': 400, 'message': '保存失败', 'data': {}})
 
+
 @loginCheck
 def getProto(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     pid = json_obj.get("pid")
-    protoList = Prototype.objects.filter(pid = pid)
+    protoList = Prototype.objects.filter(pid=pid)
     protolist = []
     for obj in protoList:
-        protolist.append({"protoid":obj.protoid,"protoname":obj.protoname})
-    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"protolist":protolist}})
+        protolist.append({"protoid": obj.protoid, "protoname": obj.protoname})
+    return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"protolist": protolist}})
 
 
 @loginCheck
@@ -307,6 +316,7 @@ def getProtoInfo(request):
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
     data = protoinfo.info
     return JsonResponse({'code': 200, 'message': '返回成功', 'data': {"info": data}})
+
 
 @loginCheck
 def exitProto(request):
