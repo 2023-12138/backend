@@ -11,6 +11,7 @@ class User(models.Model):#有自增主键 id,记录用户基本信息
     avatar = models.TextField('avatar',default=baseAvatar) #base64头像
     identity = models.IntegerField('identity',default=0) #用户身份0代表普通用户,1代表仅可查看游客,2代表可编辑游客
     authorid=models.CharField('authorid',max_length=55)
+    logincnt = models.IntegerField('logincnt',default=0) #记录登录次数
     is_active = models.BooleanField('is_active', default=True)  # 伪删除字段
 
 
