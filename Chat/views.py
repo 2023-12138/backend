@@ -42,6 +42,7 @@ async def getHistory(request):
     tid = json_obj.get('tid')  # 团队id
     senderId = json_obj.get('senderId')  # 私聊对象的uid
     # uid = json_obj.get('uid') # 自己的uid
+    sendername = User.objects.get(uid=senderId).username
     uid = user.uid
     userSocket = userSocketDict.get(uid)
     if tid != "":  # 群消息记录
@@ -50,7 +51,7 @@ async def getHistory(request):
         async  for obj in recordTmp:
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
             data = {"message": obj.content, "senderId": obj.sender, "receiverId": "", "teamId": tid, "time": nowTime,
-                    "rid": obj.rid}
+                    "rid": obj.rid,"sendername":sendername}
             await userSocket.send(text_data=json.dumps({
                 "type": obj.type,
                 "data": data
@@ -74,7 +75,7 @@ async def getHistory(request):
             print(model_to_dict(obj))
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
             data = {"message": obj.content, "senderId": obj.sender, "receiverId": obj.uid, "teamId": "",
-                    "time": nowTime, "rid": obj.rid}
+                    "time": nowTime, "rid": obj.rid,"sendername":sendername}
             await userSocket.send(
                 text_data=json.dumps({
                     "type": obj.type,
