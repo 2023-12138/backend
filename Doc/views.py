@@ -228,11 +228,13 @@ async def docAite(request):
     user = await get_user(username)
     padid = json_obj.get("padid")
     doc = await get_doc(padid)
+    pid=doc.pid
+    project=Project.objects.get(pid=pid)
     userSocket = userSocketDict.get(user.uid)
     notice = Notice(uid=user.uid, rid=-1, docId=doc.docId, type="doc")
     await  notice_save(notice)
     if userSocket != None:
-        data = {"docid":doc.docId}
+        data = {"tid":project.tid,"pid":project.pid,"docid":doc.docId}
         await userSocket.send(text_data=json.dumps({
             "type": "doc_aite",
             "data": data}
