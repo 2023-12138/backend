@@ -42,13 +42,14 @@ async def getHistory(request):
     tid = json_obj.get('tid')  # 团队id
     senderId = json_obj.get('senderId')  # 私聊对象的uid
     # uid = json_obj.get('uid') # 自己的uid
-    sendername = User.objects.get(uid=senderId).username
+    # sendername = User.objects.get(uid=senderId).username
     uid = user.uid
     userSocket = userSocketDict.get(uid)
     if tid != "":  # 群消息记录
         cid = await get_cid(tid)  # 聊天室id
         recordTmp = await get_record(cid)  # 获取该聊天室所有的聊天记录
         async  for obj in recordTmp:
+            sendername = await get_sendername(obj.uid)
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
             data = {"message": obj.content, "senderId": obj.sender, "receiverId": "", "teamId": tid, "time": nowTime,
                     "rid": obj.rid,"sendername":sendername}
@@ -57,6 +58,7 @@ async def getHistory(request):
                 "data": data
             }))
     elif senderId != "":  # 私聊消息记录
+        sendername = User.objects.get(uid=senderId)
         chatRoom1 = await get_chatroom(uid, senderId)
         chatRoom2 = await get_chatroom(senderId, uid)
         cid = -1
@@ -120,3 +122,7 @@ def chatroom_exists(chatroom):
 @database_sync_to_async
 def chatroom_cid(chatroom):
     return chatroom.first().cid
+
+@database_sync_to_async
+def get_sendername(senderid):
+    return User.objects.get(uid=senderid).username
