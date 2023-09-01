@@ -58,24 +58,28 @@ async def getHistory(request):
                 "data": data
             }))
     elif senderId != "":  # 私聊消息记录
-        senderName = await  get_sendername(senderId)
+        senderName = ""
         chatRoom1 = await get_chatroom(uid, senderId)
         chatRoom2 = await get_chatroom(senderId, uid)
         cid = -1
         if await chatroom_exists(chatRoom1) == 1:
             cid = await chatroom_cid(chatRoom1)
+            # senderName = await  get_sendername(uid)
         elif await chatroom_exists(chatRoom2) == 1:
             cid = await chatroom_cid(chatRoom2)
+            # senderName = await  get_sendername(senderId)
         else:
             newChatRoom = Chatroom()
             await chatroom_save(newChatRoom)
             cid = newChatRoom.cid
             newchatuser = ChatUser(cid=cid, from_uid=uid, to_uid=senderId)
             await chatuser_save(newchatuser)
+            # senderName = await  get_sendername(uid)
         recordTmp = await get_record(cid)  # 获取该聊天室所有的聊天记录
         async for obj in recordTmp:
             print(model_to_dict(obj))
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
+            senderName = await  get_sendername(obj.sender)
             data = {"message": obj.content, "senderId": obj.sender, "receiverId": obj.uid, "teamId": "",
                     "time": nowTime, "rid": obj.rid,"senderName":senderName}
             await userSocket.send(
