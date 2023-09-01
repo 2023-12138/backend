@@ -101,7 +101,6 @@ def viewTeam(request):  # 用户查看当前所属团队
             privateid = data.tid
     return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'teamlist': teamlist, "privateTid": privateid}})
 
-
 @loginCheck
 def deleteUser(request):  # 删除用户
     user = request.myUser

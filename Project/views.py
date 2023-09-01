@@ -134,6 +134,7 @@ def viewProject(request):
     json_str = request.body
     json_obj = json.loads(json_str)
     tid = json_obj.get('tid')
+    team=Team.objects.get(tid=tid)
     projectlist = Project.objects.filter(Q(tid=tid) & Q(is_active=True))
     projects = []
     for project in projectlist:
@@ -144,7 +145,7 @@ def viewProject(request):
         data['create_time'] = project.create_time
         data['username'] = username
         projects.append(data)
-    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects}})
+    return JsonResponse({'code': 200, 'message': '查询成功', 'data': {'projectlist': projects,'teamname':team.teamname,'teaminform':team.teaminform}})
 
 
 @loginCheck
