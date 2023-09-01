@@ -315,11 +315,15 @@ def getProtoInfo(request):
 def exitProto(request):
     json_str = request.body
     json_obj = json.loads(json_str)
+    user = request.myUser
     protoid = json_obj.get("protoid")
     protoinfo = Protoinfo.objects.get(proto_info_id=protoid)
-    protoinfo.useid = -1
-    protoinfo.save()
-    return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
+    if protoinfo.useid ==user.uid:
+        protoinfo.useid = -1
+        protoinfo.save()
+        return JsonResponse({'code': 200, 'message': '退出成功', 'data': {}})
+    else:
+        return JsonResponse({'code': 400, 'message': '请先申请编辑', 'data': {}})
 
 @loginCheck
 def makeLink(request):
