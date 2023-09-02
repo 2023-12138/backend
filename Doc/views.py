@@ -255,7 +255,7 @@ def makeLink(request):  # 生成链接
     json_obj = json.loads(json_str)
     identity = json_obj.get("identity")
     docid = json_obj.get("docid")  # 文档编号
-    user = User(username="xxx", password="xxx", name="xxx", identity=identity)
+    user = User(username="游客", password="xxx", name="xxx", identity=identity)
     try:
         user.save()
     except Exception as e:
