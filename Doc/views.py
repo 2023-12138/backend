@@ -269,8 +269,8 @@ def makeLink(request):  # 生成链接
     sessionid = createSession(groupid, authorid)
     if identity == '1':  # 代表仅查看游客
         padid = myPad.getReadOnlyID(padid).get('readOnlyID')
-    link = "http://43.138.59.36:10010/p/&padID=" + padid + "&sessionID=" + sessionid
-    return JsonResponse({'code': 200, 'message': '生成链接成功', 'data': {'url': link}})
+    link="http://43.138.59.36:10010/auth_session?sessionID="+sessionid+"&groupID="+groupid+"&padName="+doc.docname
+    return JsonResponse({'code': 200, 'message': '生成链接成功', 'data': {"sessionid":sessionid,"padid":padid}})
 
 
 @database_sync_to_async
