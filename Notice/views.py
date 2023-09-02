@@ -92,7 +92,7 @@ def getNotice(request):  # 返回群聊通知列表
             name = Team.objects.get(tid=notice.tid).teamname
         notice_dic['name'] = name
         notice_list.append(notice_dic)
-        
+
     return JsonResponse({'code': 200, 'message': "通知获取成功", "data": {'notice_list': notice_list}})
 
 
