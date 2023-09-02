@@ -11,6 +11,7 @@ from Tools.EmailCheck import emailCheck, createCaptcha
 from Tools.MakeToken import make_token
 from Tools.LoginCheck import loginCheck
 from Doc.views import *
+from Tools.QiNiuYun import uploadFile
 
 # 注册
 def userRegister(request):
