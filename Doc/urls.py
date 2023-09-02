@@ -13,6 +13,7 @@ urlpatterns = [
     # path("getdoc",views.getDoc), #获取文档内容
     path("createdoc",views.createDoc), #创建文档
     path('getAuthor',views.getAuthor),
-    path('openDoc',views.openDoc)
+    path('openDoc',views.openDoc),
+    path('makeLink',views.makeLink)
     # path('renamedoc',views.renameDoc)
 ]
