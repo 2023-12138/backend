@@ -76,7 +76,6 @@ async def getHistory(request):
             # senderName = await  get_sendername(uid)
         recordTmp = await get_record(cid)  # 获取该聊天室所有的聊天记录
         async for obj in recordTmp:
-            print(model_to_dict(obj))
             nowTime = obj.time.strftime("%Y-%m-%d %H:%M:%S")  # 当前时间
             senderName = await  get_sendername(obj.sender)
             data = {"message": obj.content, "senderId": obj.sender, "receiverId": obj.uid, "teamId": "",

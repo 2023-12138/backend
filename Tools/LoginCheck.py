@@ -30,7 +30,6 @@ def loginCheck(func):
 def asyncLoginCheck(func):
     async def wrap(request,*args,**kwargs):
         token = request.META.get('HTTP_AUTHORIZATION')
-        print(token)
         if not token:
             return JsonResponse({'code': 400, 'message': "请重新登录", 'data': {}})
         try:
