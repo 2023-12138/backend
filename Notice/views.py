@@ -4,7 +4,8 @@ from django.db.models import Q
 from Notice.models import *
 from Tools.LoginCheck import loginCheck
 from django.forms.models import model_to_dict
-
+from Doc.models import *
+from  Team.models import *
 
 @loginCheck
 def allRead(request):
@@ -79,7 +80,17 @@ def getNotice(request):  # 返回群聊通知列表
     uid = user.uid
     type = json_obj.get("type")
     notices = Notice.objects.filter(Q(uid=uid) & Q(is_active=True) & Q(type=type))
-    notice_list = [model_to_dict(notice) for notice in notices]
+    notice_list = []
+    for notice in notices:
+        notice_dic = model_to_dict(notice)
+        name = ""
+        if notice.docId :
+            name = Doc.objects.get(docId=notice.docId).docname
+        else:
+            name = Team.objects.get(tid=notice.tid).teamname
+        notice_dic['name'] = name
+        notice_list.append(notice_dic)
+
     return JsonResponse({'code': 200, 'message': "通知获取成功", "data": {'notice_list': notice_list}})
 
 
