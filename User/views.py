@@ -11,7 +11,6 @@ from Tools.MakeToken import make_token
 from Tools.LoginCheck import loginCheck
 from Doc.views import *
 
-
 # 注册
 def userRegister(request):
     json_str = request.body  # 拿到json字符串
@@ -192,16 +191,18 @@ def changePassword(request):  # 修改密码
 
 @loginCheck
 def changeAvatar(request):  # 修改头像
+    key = request.POST.get("key")
+    file = request.FILES.get("file")
     user = request.myUser
-    json_str = request.body
-    json_obj = json.loads(json_str)
-    avatar = json_obj.get("avatar")
-    user.avatar = avatar
-    try:
+    nowTime = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")  # 当前时间
+    filename = "".join(nowTime.split()) + "_" + key
+    code = uploadFile(filename, file)
+    if code == 400:
+        return JsonResponse({'code': 400, 'message': "上传失败", "data": {}})
+    else:
+        user.avatar = code
         user.save()
-        return JsonResponse({'code': 200, 'message': '修改头像成功', 'data': {}})
-    except Exception as e:
-        return JsonResponse({'code': 500, 'message': '服务器异常', 'data': {}})
+        return JsonResponse({'code': 200, 'message': "上传成功", "data": {"url": code}})
 
 
 def pwdFind(request):  # 找回密码验证

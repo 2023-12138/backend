@@ -26,7 +26,6 @@ def saveFile(request):
     file = request.FILES.get("file")
     nowTime = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")  # 当前时间
     filename ="".join(nowTime.split())+"_"+key
-    print(key)
     code = uploadFile(filename, file)
     if code == 400:
         return JsonResponse({'code': 400, 'message': "上传失败", "data": {}})
