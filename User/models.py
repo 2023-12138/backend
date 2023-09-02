@@ -1,5 +1,5 @@
 from django.db import models
-baseAvatar = "http://rzyi06q9n.hb-bkt.clouddn.com/%E4%BA%BA%E5%83%8F.png"
+baseAvatar = "http://rzyi06q9n.hb-bkt.clouddn.com/lufei.jpg"
 # Create your models here.
 class User(models.Model):#有自增主键 id,记录用户基本信息
     uid = models.AutoField('uid',primary_key=True) #用户id
